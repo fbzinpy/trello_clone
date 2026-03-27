@@ -1,0 +1,39 @@
+# Dependencias (regenera con npm install)
+node_modules/
+frontweb/node_modules/
+backweb/node_modules/
+
+# Builds y dist
+dist/
+frontweb/dist/
+backweb/dist/
+*.log
+npm-debug.log*
+
+# Entorno
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+.env.*.local
+
+# Prisma
+prisma/migrations/
+frontweb/.vite/
+
+# Editor/IDE
+.vscode/settings.json
+.idea/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Runtime data
+pids
+*.pid
+*.seed
+*.pid.lock
