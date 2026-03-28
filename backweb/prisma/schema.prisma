@@ -4,7 +4,7 @@ generator client {
 
 datasource db {
   provider = "postgresql"
-  // SIN url aquí - va config.ts
+  url      = env("DATABASE_URL") 
 }
 
 model User {
