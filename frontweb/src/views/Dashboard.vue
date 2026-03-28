@@ -1,14 +1,26 @@
 <template>
   <div class="container">
     <div class="card">
-      <h1 class="title">Dashboard </h1>
-      <p class="subtitle">Si ves esto, estás logueado</p>
-
-      <div class="actions">
-        <button class="logout" @click="logout">
-          Cerrar sesión 
-        </button>
+      <div class="header">
+        <h1>Dashboard</h1>
+        <p>Bienvenido, ya estás dentro</p>
       </div>
+
+      <div class="content">
+        <div class="info">
+          <p class="label">Estado</p>
+          <p class="value">Autenticado</p>
+        </div>
+
+        <div class="info">
+          <p class="label">Sesión</p>
+          <p class="value">Activa </p>
+        </div>
+      </div>
+
+      <button class="logout" @click="logout">
+        Cerrar sesión
+      </button>
     </div>
   </div>
 </template>
@@ -30,48 +42,104 @@ const logout = () => {
   display: flex;
   justify-content: center;
   align-items: center;
-  background: linear-gradient(135deg, #1e293b, #0f172a);
-  font-family: popins, sans-serif;
+  background: radial-gradient(circle at top, #1e293b, #020617);
+  font-family: 'Poppins', sans-serif;
 }
 
+/* TARJETA */
 .card {
-  background: #ffffff;
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(10px);
   padding: 2.5rem;
   border-radius: 20px;
-  width: 340px;
-  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
+  width: 360px;
+  box-shadow: 0 25px 60px rgba(0, 0, 0, 0.35);
   text-align: center;
+  animation: fadeIn 0.6s ease;
 }
 
-.title {
-  margin-bottom: 0.5rem;
-  color: #111827;
+/* HEADER */
+.header h1 {
+  margin-bottom: 0.3rem;
+  color: #0f172a;
 }
 
-.subtitle {
-  margin-bottom: 2rem;
-  color: #6b7280;
-  font-size: 0.95rem;
+.header p {
+  color: #64748b;
+  font-size: 0.9rem;
+  margin-bottom: 1.5rem;
 }
 
-.actions {
+/* INFO */
+.content {
   display: flex;
-  justify-content: center;
+  justify-content: space-between;
+  margin-bottom: 2rem;
 }
 
-.logout {
-  padding: 10px 16px;
-  border: none;
-  border-radius: 10px;
-  background: #ef4444;
-  color: white;
+.info {
+  background: #f1f5f9;
+  padding: 1rem;
+  border-radius: 12px;
+  width: 48%;
+}
+
+.label {
+  font-size: 0.75rem;
+  color: #64748b;
+}
+
+.value {
   font-weight: bold;
+  color: #0f172a;
+}
+
+/* BOTÓN */
+.logout {
+  width: 100%;
+  padding: 12px;
+  border: none;
+  border-radius: 12px;
+  background: linear-gradient(135deg, #ef4444, #dc2626);
+  color: white;
+  font-weight: 600;
   cursor: pointer;
   transition: 0.2s;
 }
 
 .logout:hover {
-  background: #dc2626;
-  transform: translateY(-1px);
+  transform: translateY(-2px);
+  box-shadow: 0 10px 20px rgba(220, 38, 38, 0.3);
 }
+
+/* ANIMACIÓN */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(15px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+:global(body) {
+  margin: 0 !important;
+  display: block !important;
+}
+
+:global(#app) {
+  width: 100% !important;
+  max-width: none !important;
+  margin: 0 !important;
+  border: none !important;
+  display: block !important;
+}
+
+.container {
+  width: 100%;
+  max-width: none;
+}
+
 </style>
