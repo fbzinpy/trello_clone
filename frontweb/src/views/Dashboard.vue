@@ -1,34 +1,72 @@
 <template>
-  <div class="container">
-    <div class="card">
-      <div class="header">
-        <h1>Dashboard</h1>
-        <p>Bienvenido, ya estás dentro</p>
-      </div>
+  <div class="layout">
+    <aside class="sidebar">
+      <h2 class="logo">Trello Clone</h2>
 
-      <div class="content">
-        <div class="info">
-          <p class="label">Estado</p>
-          <p class="value">Autenticado</p>
+      <nav>
+        <p class="menu-title">General</p>
+        <ul>
+          <li>Tableros</li>
+          <li>Plantillas</li>
+          <li>Inicio</li>
+        </ul>
+
+        <p class="menu-title">Espacios</p>
+        <ul>
+          <li>Mi espacio</li>
+        </ul>
+      </nav>
+    </aside>
+
+    <div class="main">
+      <header class="header">
+        <input type="text" placeholder="Buscar..." class="search" />
+        <button class="create">Crear</button>
+
+        <div class="profile" @click="toggleMenu">
+          FTP
+          <div v-if="open" class="dropdown">
+            <p class="email">fabiusc1855@gmail.com</p>
+            <hr />
+            <p class="item">Perfil</p>
+            <p class="item">Configuración</p>
+            <p class="item" @click="logout">Cerrar sesión</p>
+          </div>
+        </div>
+      </header>
+
+      <section class="content">
+        <h3>Visto recientemente</h3>
+
+        <div class="cards">
+          <div class="card">Proyecto 1</div>
+          <div class="card">Proyecto 2</div>
+          <div class="card">Proyecto 3</div>
         </div>
 
-        <div class="info">
-          <p class="label">Sesión</p>
-          <p class="value">Activa </p>
-        </div>
-      </div>
+        <h3 style="margin-top: 30px;">Tus tableros</h3>
 
-      <button class="logout" @click="logout">
-        Cerrar sesión
-      </button>
+        <div class="cards">
+          <div class="card">Tablero A</div>
+          <div class="card">Tablero B</div>
+          <div class="card">Tablero C</div>
+          <div class="card add">+ Crear nuevo</div>
+        </div>
+      </section>
     </div>
   </div>
 </template>
 
 <script setup>
+import { ref } from 'vue'
 import { useAuthStore } from '../store/auth'
 
 const auth = useAuthStore()
+const open = ref(false)
+
+const toggleMenu = () => {
+  open.value = !open.value
+}
 
 const logout = () => {
   auth.logout()
@@ -37,109 +75,155 @@ const logout = () => {
 </script>
 
 <style scoped>
-.container {
-  height: 100vh;
+.layout {
   display: flex;
-  justify-content: center;
-  align-items: center;
-  background: radial-gradient(circle at top, #1e293b, #020617);
+  height: 100vh;
   font-family: 'Poppins', sans-serif;
 }
 
-/* TARJETA */
-.card {
-  background: rgba(255, 255, 255, 0.95);
-  backdrop-filter: blur(10px);
-  padding: 2.5rem;
-  border-radius: 20px;
-  width: 360px;
-  box-shadow: 0 25px 60px rgba(0, 0, 0, 0.35);
-  text-align: center;
-  animation: fadeIn 0.6s ease;
-}
-
-/* HEADER */
-.header h1 {
-  margin-bottom: 0.3rem;
-  color: #0f172a;
-}
-
-.header p {
-  color: #64748b;
-  font-size: 0.9rem;
-  margin-bottom: 1.5rem;
-}
-
-/* INFO */
-.content {
-  display: flex;
-  justify-content: space-between;
-  margin-bottom: 2rem;
-}
-
-.info {
-  background: #f1f5f9;
-  padding: 1rem;
-  border-radius: 12px;
-  width: 48%;
-}
-
-.label {
-  font-size: 0.75rem;
-  color: #64748b;
-}
-
-.value {
-  font-weight: bold;
-  color: #0f172a;
-}
-
-/* BOTÓN */
-.logout {
-  width: 100%;
-  padding: 12px;
-  border: none;
-  border-radius: 12px;
-  background: linear-gradient(135deg, #ef4444, #dc2626);
+.sidebar {
+  width: 240px;
+  background: #0f172a;
   color: white;
-  font-weight: 600;
+  padding: 20px;
+}
+
+.logo {
+  margin-bottom: 20px;
+}
+
+.menu-title {
+  font-size: 12px;
+  color: #94a3b8;
+  margin-top: 20px;
+}
+
+ul {
+  list-style: none;
+  padding: 0;
+}
+
+li {
+  padding: 10px;
+  border-radius: 8px;
   cursor: pointer;
-  transition: 0.2s;
 }
 
-.logout:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 10px 20px rgba(220, 38, 38, 0.3);
+li:hover {
+  background: #1e293b;
 }
 
-/* ANIMACIÓN */
-@keyframes fadeIn {
-  from {
-    opacity: 0;
-    transform: translateY(15px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
+.main {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  background: #020617;
+  color: white;
 }
 
-:global(body) {
-  margin: 0 !important;
-  display: block !important;
+.header {
+  height: 60px;
+  background: #111827;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 20px;
 }
 
-:global(#app) {
-  width: 100% !important;
-  max-width: none !important;
-  margin: 0 !important;
-  border: none !important;
-  display: block !important;
+.search {
+  width: 250px;
+  padding: 8px;
+  border-radius: 6px;
+  border: none;
 }
 
-.container {
-  width: 100%;
-  max-width: none;
+.create {
+  background: #3b82f6;
+  border: none;
+  padding: 8px 16px;
+  color: white;
+  border-radius: 6px;
+  cursor: pointer;
 }
 
+.content {
+  padding: 20px;
+}
+
+.cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, 200px);
+  gap: 16px;
+  margin-top: 10px;
+}
+
+.card {
+  height: 120px;
+  background: linear-gradient(135deg, #6366f1, #22c55e);
+  border-radius: 10px;
+  padding: 10px;
+  cursor: pointer;
+  display: flex;
+  align-items: flex-end;
+  font-weight: bold;
+}
+
+.card:hover {
+  opacity: 0.9;
+}
+
+.add {
+  background: #1e293b;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.profile {
+  width: 35px;
+  height: 35px;
+  background: #f97316;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-weight: bold;
+  cursor: pointer;
+  position: relative;
+}
+
+.dropdown {
+  position: absolute;
+  top: 45px;
+  right: 0;
+  width: 220px;
+  background: #1f2937;
+  border-radius: 10px;
+  padding: 10px;
+  color: white;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+}
+
+.email {
+  font-size: 12px;
+  color: #9ca3af;
+  margin-bottom: 8px;
+}
+
+.item {
+  padding: 8px;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.item:hover {
+  background: #374151;
+}
+
+hr {
+  border: none;
+  border-top: 1px solid #374151;
+  margin: 8px 0;
+}
 </style>
