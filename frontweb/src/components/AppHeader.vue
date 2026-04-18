@@ -50,6 +50,6 @@ function logout() { auth.logout(); location.href = '/' }
 .email { font-size: .75rem; color: #8993a4; padding: 4px 8px 8px; word-break: break-all; }
 hr { border: none; border-top: 1px solid #e2e8f0; margin: 4px 0; }
 .dropdown-item { padding: 8px 10px; border-radius: 6px; cursor: pointer; font-size: .88rem; color: #172b4d; font-weight: 500; }
-.dropdown-item:hover { background: #f0f4ff; color: #0052CC; }
+.dropdown-item:hover { background: #f0f4ff; color: #165ac0; }
 .logout:hover { background: #ffebe6; color: #bf2600; }
 </style>
