@@ -1,10 +1,16 @@
 <template>
   <header class="header">
     <div class="search-wrapper">
-      <input type="text" placeholder="Buscar..." class="search" />
+      <input
+        :value="search"
+        type="text"
+        placeholder="Buscar tableros..."
+        class="search"
+        @input="updateSearch"
+      />
     </div>
-    <button class="btn-create">Crear</button>
-    <div class="profile" @click="toggleMenu">
+    <button class="btn-create" @click="$emit('create-board')">Crear</button>
+    <div ref="profileRef" class="profile" @click="toggleMenu">
       {{ userInitials }}
       <div v-if="open" class="dropdown" @click.stop>
         <p class="email">{{ userEmail }}</p>
@@ -18,11 +24,20 @@
 </template>
 
 <script setup>
-import { ref, computed } from 'vue'
+import { ref, computed, onMounted, onBeforeUnmount } from 'vue'
+import { useRouter } from 'vue-router'
 import { useAuthStore } from '../store/auth'
 
+const props = defineProps({
+  search: { type: String, default: '' }
+})
+
+const emit = defineEmits(['update:search', 'create-board'])
+
 const auth = useAuthStore()
+const router = useRouter()
 const open = ref(false)
+const profileRef = ref(null)
 
 function decodeToken(token) {
   try { return JSON.parse(atob(token.split('.')[1])) } catch { return {} }
@@ -33,7 +48,30 @@ const userEmail    = computed(() => tokenData.value.email || 'usuario@trelloclon
 const userInitials = computed(() => userEmail.value.slice(0, 3).toUpperCase())
 
 function toggleMenu() { open.value = !open.value }
-function logout() { auth.logout(); location.href = '/' }
+
+function updateSearch(event) {
+  emit('update:search', event.target.value)
+}
+
+function handleClickOutside(event) {
+  if (!profileRef.value?.contains(event.target)) {
+    open.value = false
+  }
+}
+
+function logout() {
+  auth.logout()
+  open.value = false
+  router.push('/')
+}
+
+onMounted(() => {
+  document.addEventListener('click', handleClickOutside)
+})
+
+onBeforeUnmount(() => {
+  document.removeEventListener('click', handleClickOutside)
+})
 </script>
 
 <style scoped>

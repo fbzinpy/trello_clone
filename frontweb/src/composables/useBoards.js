@@ -10,6 +10,17 @@ function makeCol(label, cards = []) {
   return { key: makeKey(), label, cards }
 }
 
+function cloneCards(cards = []) {
+  return cards.map((card) => ({
+    ...card,
+    id: nextCardId++
+  }))
+}
+
+function cloneColumns(columns = []) {
+  return columns.map((column) => makeCol(column.label, cloneCards(column.cards)))
+}
+
 function makeBoard(id, name) {
   return {
     id,
@@ -43,8 +54,8 @@ export function useBoards() {
     makeBoard(6, 'Tablero C'),
   ])
 
-  function createBoard() {
-    const name = prompt('Nombre del nuevo tablero:')
+  function createBoard(customName = null) {
+    const name = customName ?? prompt('Nombre del nuevo tablero:')
     if (!name?.trim()) return
     userBoards.value.push({
       id: nextBoardId++,
@@ -57,5 +68,17 @@ export function useBoards() {
     })
   }
 
-  return { recentBoards, userBoards, createBoard }
+  function duplicateBoard(board) {
+    userBoards.value.push({
+      id: nextBoardId++,
+      name: `${board.name} copia`,
+      columns: cloneColumns(board.columns)
+    })
+  }
+
+  function deleteBoard(boardId) {
+    userBoards.value = userBoards.value.filter((board) => board.id !== boardId)
+  }
+
+  return { recentBoards, userBoards, createBoard, duplicateBoard, deleteBoard }
 }
