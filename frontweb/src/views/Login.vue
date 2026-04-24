@@ -101,6 +101,8 @@
 
 <script setup>
 import { ref } from 'vue'
+import { useRouter } from 'vue-router'
+import { useAuthStore } from '../store/auth'
 
 const email = ref('')
 const password = ref('')
@@ -110,6 +112,8 @@ const mensaje = ref('')
 const mensajeOk = ref(false)
 const formRef = ref(null)
 const activeMenu = ref(null)
+const router = useRouter()
+const auth = useAuthStore()
 
 let closeTimer = null
 
@@ -143,9 +147,9 @@ async function login() {
     })
     const data = await res.json()
     if (!res.ok) return showMsg(data.error)
-    localStorage.setItem('token', data.token)
+    auth.setToken(data.token)
     showMsg('¡Login exitoso! Redirigiendo...', true)
-    setTimeout(() => { window.location.href = '/dashboard' }, 1200)
+    setTimeout(() => { router.push('/dashboard') }, 1200)
   } catch {
     showMsg('Error de conexión con el servidor')
   } finally {
