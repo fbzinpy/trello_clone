@@ -45,4 +45,10 @@ const login = async (email, password) => {
   return { token }
 }
 
-module.exports = { register, login }
+const getAllUsers = async () => {
+  return prisma.user.findMany({
+    select: { id: true, email: true, role: true, createdAt: true },
+  })
+}
+
+module.exports = { register, login, getAllUsers }

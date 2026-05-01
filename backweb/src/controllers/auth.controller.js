@@ -28,4 +28,20 @@ const login = async (req, res) => {
   }
 }
 
-module.exports = { register, login }
+// Devuelve los datos del usuario autenticado (desde req.user seteado por verifyToken)
+const getMe = (req, res) => {
+  res.json({ user: req.user })
+}
+
+// Solo accesible por admin
+const getAllUsers = async (req, res) => {
+  try {
+    const users = await authService.getAllUsers()
+    res.json(users)
+  } catch (error) {
+    console.error(error)
+    res.status(500).json({ error: 'Error al obtener usuarios' })
+  }
+}
+
+module.exports = { register, login, getMe, getAllUsers }
