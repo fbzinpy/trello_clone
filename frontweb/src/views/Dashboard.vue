@@ -153,5 +153,10 @@ function handleDeleteBoard(board) {
 .section-head { margin-bottom: 20px; }
 .page-title { font-size: 1.35rem; font-weight: 800; color: #172b4d; }
 .page-subtitle { margin-top: 6px; color: #52627a; font-size: 0.95rem; }
+:global(.dark-mode) .layout { background: #0f172a; }
+:global(.dark-mode) .main { background: linear-gradient(135deg,#101827 0%,#172033 56%,#10251f 100%); }
+:global(.dark-mode) .content { background: transparent; color: #dbeafe; min-height: calc(100vh - 58px); }
+:global(.dark-mode) .page-title { color: #f8fafc; }
+:global(.dark-mode) .page-subtitle { color: #9fb0c8; }
 @media (max-width: 900px) { .content { padding: 20px 16px; } }
 </style>
