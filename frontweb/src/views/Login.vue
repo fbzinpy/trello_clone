@@ -103,6 +103,7 @@
 import { ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { useAuthStore } from '../store/auth'
+import api from '../axios'
 
 const email = ref('')
 const password = ref('')
@@ -138,12 +139,7 @@ function showMsg(text, ok = false) {
 
 function submitAuth() {
   if (loading.value) return
-
-  if (mode.value === 'login') {
-    login()
-    return
-  }
-
+  if (mode.value === 'login') { login(); return }
   register()
 }
 
@@ -159,6 +155,9 @@ async function login() {
     const data = await res.json()
     if (!res.ok) return showMsg(data.error)
     auth.setToken(data.token)
+    // Guardar datos del usuario en Pinia
+    const meRes = await api.get('/auth/me')
+    auth.setUser(meRes.data.user)
     showMsg('¡Login exitoso! Redirigiendo...', true)
     setTimeout(() => { router.push('/dashboard') }, 1200)
   } catch {

@@ -51,25 +51,35 @@
 import { ref } from 'vue'
 import KanbanColumn from './KanbanColumn.vue'
 import { useDragDrop } from '../composables/useDragDrop'
+import api from '../axios'
 
 const props = defineProps({
   board: { type: Object, required: true }
 })
 defineEmits(['close'])
 
+// Normalizar columnas: asegurar que tengan .key basado en .id
+props.board.columns.forEach(col => {
+  if (!col.key) col.key = String(col.id)
+})
+
 const { dragOverCol, draggingCard, onDragStart, onDragEnd, onColLeave, onDrop } = useDragDrop(props.board)
 
-// Columnas dinamicas
-let nextColKey    = 100
 const addingColumn = ref(false)
 const newColLabel  = ref('')
 
-function confirmAddColumn() {
+async function confirmAddColumn() {
   const label = newColLabel.value.trim()
   if (!label) return
-  props.board.columns.push({ key: `col_${nextColKey++}`, label, cards: [] })
-  newColLabel.value  = ''
-  addingColumn.value = false
+  try {
+    const { data } = await api.post(`/boards/${props.board.id}/columns`, { label })
+    data.key = String(data.id)
+    props.board.columns.push(data)
+    newColLabel.value  = ''
+    addingColumn.value = false
+  } catch (e) {
+    console.error('Error al agregar columna', e)
+  }
 }
 
 function cancelAddColumn() {
@@ -77,20 +87,37 @@ function cancelAddColumn() {
   addingColumn.value = false
 }
 
-function deleteColumn(colKey) {
-  props.board.columns = props.board.columns.filter(c => c.key !== colKey)
-}
-
-function addCard({ colKey, text }) {
-  const col = props.board.columns.find(c => c.key === colKey)
-  if (!col || !text.trim()) return
-  col.cards.push({ id: Date.now(), title: text.trim() })
-}
-
-function deleteCard({ colKey, cardId }) {
+async function deleteColumn(colKey) {
   const col = props.board.columns.find(c => c.key === colKey)
   if (!col) return
-  col.cards = col.cards.filter(c => c.id !== cardId)
+  try {
+    await api.delete(`/boards/columns/${col.id}`)
+    props.board.columns = props.board.columns.filter(c => c.key !== colKey)
+  } catch (e) {
+    console.error('Error al eliminar columna', e)
+  }
+}
+
+async function addCard({ colKey, text }) {
+  const col = props.board.columns.find(c => c.key === colKey)
+  if (!col || !text.trim()) return
+  try {
+    const { data } = await api.post(`/boards/columns/${col.id}/cards`, { title: text.trim() })
+    col.cards.push(data)
+  } catch (e) {
+    console.error('Error al agregar tarjeta', e)
+  }
+}
+
+async function deleteCard({ colKey, cardId }) {
+  const col = props.board.columns.find(c => c.key === colKey)
+  if (!col) return
+  try {
+    await api.delete(`/boards/cards/${cardId}`)
+    col.cards = col.cards.filter(c => c.id !== cardId)
+  } catch (e) {
+    console.error('Error al eliminar tarjeta', e)
+  }
 }
 </script>
 
