@@ -61,20 +61,20 @@
           <button :class="['tab', { active: mode === 'login' }]" @click="mode = 'login'">Iniciar sesión</button>
           <button :class="['tab', { active: mode === 'register' }]" @click="mode = 'register'">Registrarse</button>
         </div>
-        <div class="form-body">
+        <form class="form-body" @submit.prevent="submitAuth">
           <input v-model="email" type="email" placeholder="Correo electrónico" class="form-input" />
           <input v-model="password" type="password" placeholder="Contraseña" class="form-input" />
           <p v-if="mensaje" :class="['mensaje', mensajeOk ? 'ok' : 'error']">{{ mensaje }}</p>
-          <button v-if="mode === 'login'" class="btn-primary" @click="login" :disabled="loading">
+          <button v-if="mode === 'login'" type="submit" class="btn-primary" :disabled="loading">
             {{ loading ? 'Cargando...' : 'Entrar' }}
           </button>
-          <button v-else class="btn-primary" @click="register" :disabled="loading">
+          <button v-else type="submit" class="btn-primary" :disabled="loading">
             {{ loading ? 'Cargando...' : 'Crear cuenta gratis' }}
           </button>
           <p class="terms">
             Al continuar, aceptas los <a href="#">Términos de servicio</a> y la <a href="#">Política de privacidad</a>.
           </p>
-        </div>
+        </form>
       </div>
     </div>
 
@@ -134,6 +134,17 @@ function showMsg(text, ok = false) {
   mensaje.value = text
   mensajeOk.value = ok
   setTimeout(() => { mensaje.value = '' }, 4000)
+}
+
+function submitAuth() {
+  if (loading.value) return
+
+  if (mode.value === 'login') {
+    login()
+    return
+  }
+
+  register()
 }
 
 async function login() {

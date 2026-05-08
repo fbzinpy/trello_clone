@@ -54,8 +54,8 @@ export function useBoards() {
     makeBoard(6, 'Tablero C'),
   ])
 
-  function createBoard(customName = null) {
-    const name = customName ?? prompt('Nombre del nuevo tablero:')
+  function createBoard(customName) {
+    const name = customName
     if (!name?.trim()) return
     userBoards.value.push({
       id: nextBoardId++,

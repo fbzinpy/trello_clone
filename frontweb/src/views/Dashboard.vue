@@ -5,7 +5,7 @@
       @select-section="selectedSection = $event"
     />
     <div class="main">
-      <AppHeader v-model:search="search" @create-board="createBoard" />
+      <AppHeader v-model:search="search" @create-board="openCreateBoardModal" />
       <section class="content">
         <div v-if="selectedSection === 'plantillas'" class="templates-view">
           <div class="section-head">
@@ -38,7 +38,7 @@
             :show-menu="true"
             style="margin-top: 32px"
             @open="openBoard"
-            @create="createBoard"
+            @create="openCreateBoardModal"
             @duplicate-board="handleDuplicateBoard"
             @delete-board="handleDeleteBoard"
           />
@@ -50,6 +50,11 @@
       :board="selectedBoard"
       @close="selectedBoard = null"
     />
+    <CreateBoardModal
+      v-if="showCreateBoardModal"
+      @close="closeCreateBoardModal"
+      @create="handleCreateBoard"
+    />
   </div>
 </template>
 
@@ -59,10 +64,12 @@ import AppSidebar from '../components/AppSidebar.vue'
 import AppHeader from '../components/AppHeader.vue'
 import BoardGrid from '../components/BoardGrid.vue'
 import BoardModal from '../components/BoardModal.vue'
+import CreateBoardModal from '../components/CreateBoardModal.vue'
 import { useBoards } from '../composables/useBoards'
 
 const { recentBoards, userBoards, createBoard, duplicateBoard, deleteBoard } = useBoards()
 const selectedBoard = ref(null)
+const showCreateBoardModal = ref(false)
 const search = ref('')
 const selectedSection = ref('tableros')
 const templates = ref([
@@ -102,6 +109,20 @@ function filterBoards(boards, term) {
 
 function openBoard(board) {
   selectedBoard.value = board
+}
+
+function openCreateBoardModal() {
+  showCreateBoardModal.value = true
+}
+
+function closeCreateBoardModal() {
+  showCreateBoardModal.value = false
+}
+
+function handleCreateBoard(name) {
+  createBoard(name)
+  selectedSection.value = 'mi-espacio'
+  closeCreateBoardModal()
 }
 
 function useTemplate(template) {

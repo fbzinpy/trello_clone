@@ -4,7 +4,7 @@ import Dashboard from '../views/Dashboard.vue'
 import Precios from '../views/Precios.vue'
 
 const routes = [
-  { path: '/', component: Login, meta: { guestOnly: true } },
+  { path: '/', component: Login },
   { path: '/dashboard', component: Dashboard, meta: { requiresAuth: true } },
   { path: '/precios', component: Precios }
 ]
@@ -19,10 +19,6 @@ router.beforeEach((to) => {
 
   if (to.meta.requiresAuth && !token) {
     return '/'
-  }
-
-  if (to.meta.guestOnly && token) {
-    return '/dashboard'
   }
 })
 
