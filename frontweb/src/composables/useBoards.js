@@ -1,4 +1,5 @@
 import { ref } from 'vue'
+import { useAuthStore } from '../store/auth'
 import api from '../axios'
 
 export function useBoards() {
@@ -6,8 +7,14 @@ export function useBoards() {
   const userBoards = ref([])
 
   async function fetchBoards() {
+    const auth = useAuthStore()
+    if (!auth.token) return
     try {
       const { data } = await api.get('/boards')
+      data.forEach(board => {
+        board.columns = board.columns || []
+        board.columns.forEach(col => { col.key = String(col.id) })
+      })
       userBoards.value = data
       recentBoards.value = data.slice(0, 3)
     } catch (e) {
@@ -18,6 +25,8 @@ export function useBoards() {
   async function createBoard(name) {
     try {
       const { data } = await api.post('/boards', { name })
+      data.columns = data.columns || []
+      data.columns.forEach(col => { col.key = String(col.id) })
       userBoards.value.unshift(data)
       recentBoards.value = userBoards.value.slice(0, 3)
     } catch (e) {
@@ -41,5 +50,5 @@ export function useBoards() {
 
   fetchBoards()
 
-  return { recentBoards, userBoards, createBoard, duplicateBoard, deleteBoard }
+  return { recentBoards, userBoards, createBoard, duplicateBoard, deleteBoard, fetchBoards }
 }
