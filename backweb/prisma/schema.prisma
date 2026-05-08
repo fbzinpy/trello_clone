@@ -4,7 +4,7 @@ generator client {
 
 datasource db {
   provider = "postgresql"
-  url      = env("DATABASE_URL") 
+  url      = env("DATABASE_URL")
 }
 
 model User {
@@ -13,4 +13,31 @@ model User {
   password  String
   role      String   @default("user")
   createdAt DateTime @default(now())
+  boards    Board[]
+}
+
+model Board {
+  id        Int      @id @default(autoincrement())
+  name      String
+  userId    Int
+  user      User     @relation(fields: [userId], references: [id])
+  columns   Column[]
+  createdAt DateTime @default(now())
+}
+
+model Column {
+  id      Int    @id @default(autoincrement())
+  label   String
+  boardId Int
+  board   Board  @relation(fields: [boardId], references: [id], onDelete: Cascade)
+  cards   Card[]
+  order   Int    @default(0)
+}
+
+model Card {
+  id       Int    @id @default(autoincrement())
+  title    String
+  columnId Int
+  column   Column @relation(fields: [columnId], references: [id], onDelete: Cascade)
+  order    Int    @default(0)
 }
