@@ -2,6 +2,7 @@ import { createRouter, createWebHistory } from 'vue-router'
 import Login from '../views/Login.vue'
 import Dashboard from '../views/Dashboard.vue'
 import Precios from '../views/Precios.vue'
+import { useAuthStore } from '../store/auth'
 
 const routes = [
   { path: '/', component: Login },
@@ -15,9 +16,8 @@ const router = createRouter({
 })
 
 router.beforeEach((to) => {
-  const token = localStorage.getItem('token')
-
-  if (to.meta.requiresAuth && !token) {
+  const auth = useAuthStore()
+  if (to.meta.requiresAuth && !auth.token) {
     return '/'
   }
 })
