@@ -1,0 +1,509 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Cheatcode Backend - Trello Clone</title>
+  <style>
+    :root {
+      --bg: #0f172a;
+      --panel: #111827;
+      --soft: #1f2937;
+      --text: #e5e7eb;
+      --muted: #9ca3af;
+      --green: #22c55e;
+      --yellow: #f59e0b;
+      --orange: #f97316;
+      --red: #ef4444;
+      --blue: #38bdf8;
+      --code: #0b1220;
+      --border: #334155;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: Arial, Helvetica, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.55;
+    }
+    .wrap {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 32px 20px 80px;
+    }
+    h1, h2, h3 { line-height: 1.2; }
+    h1 { font-size: 2.2rem; margin-bottom: 8px; }
+    h2 {
+      margin-top: 42px;
+      padding-bottom: 8px;
+      border-bottom: 1px solid var(--border);
+    }
+    h3 { margin-top: 28px; }
+    p, li { color: var(--text); }
+    .muted { color: var(--muted); }
+    .card {
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 18px;
+      margin: 16px 0;
+    }
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 16px;
+    }
+    .tag {
+      display: inline-block;
+      padding: 4px 10px;
+      border-radius: 999px;
+      font-size: 0.9rem;
+      font-weight: bold;
+      margin-bottom: 8px;
+    }
+    .easy { background: rgba(34,197,94,.15); color: var(--green); }
+    .mid { background: rgba(245,158,11,.15); color: var(--yellow); }
+    .hard { background: rgba(249,115,22,.15); color: var(--orange); }
+    .boss { background: rgba(239,68,68,.15); color: var(--red); }
+    .info { background: rgba(56,189,248,.15); color: var(--blue); }
+    code, pre {
+      font-family: Consolas, Monaco, monospace;
+      background: var(--code);
+      color: #dbeafe;
+    }
+    code { padding: 2px 6px; border-radius: 6px; }
+    pre {
+      padding: 14px;
+      border-radius: 12px;
+      overflow-x: auto;
+      border: 1px solid var(--border);
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 16px 0;
+      background: var(--panel);
+      border: 1px solid var(--border);
+    }
+    th, td {
+      border: 1px solid var(--border);
+      padding: 10px;
+      text-align: left;
+      vertical-align: top;
+    }
+    th { background: var(--soft); }
+    ul { padding-left: 20px; }
+    .flow {
+      white-space: pre-wrap;
+      font-weight: bold;
+      color: #bfdbfe;
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 16px;
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <h1>Cheatcode Backend — Trello Clone</h1>
+    <p class="muted">Guía de estudio para parcial en vivo. Ordenada de fácil a difícil. Pensada para saber qué tocar, por qué tocarlo y cómo resolver bajo presión.</p>
+
+    <h2>1. Flujo sagrado</h2>
+    <div class="flow">Request HTTP
+↓
+ROUTE → define verbo y URL
+↓
+MIDDLEWARE → valida token / valida body
+↓
+CONTROLLER → extrae datos de req, llama service, responde
+↓
+SERVICE → lógica pura con Prisma
+↓
+DATABASE</div>
+
+    <div class="card">
+      <span class="tag info">Regla madre</span>
+      <ul>
+        <li>Si hay una URL nueva, casi siempre tocas <code>route + controller + service</code>.</li>
+        <li>Si hay un campo nuevo en base de datos, casi siempre tocas <code>schema.prisma + schema Zod + controller + service</code>.</li>
+        <li>Si hay seguridad, revisa <code>middleware</code> y el uso de <code>req.user</code>.</li>
+        <li>Si solo cambia un texto, un orden o una condición, probablemente basta con <code>service</code> o <code>controller</code>.</li>
+      </ul>
+    </div>
+
+    <h2>2. Mapa mental</h2>
+    <div class="grid">
+      <div class="card">
+        <h3>Auth</h3>
+        <ul>
+          <li><code>register</code></li>
+          <li><code>login</code></li>
+          <li><code>getMe</code></li>
+          <li><code>getAllUsers</code></li>
+        </ul>
+      </div>
+      <div class="card">
+        <h3>Board</h3>
+        <ul>
+          <li><code>getBoards</code></li>
+          <li><code>createBoard</code></li>
+          <li><code>deleteBoard</code></li>
+          <li><code>addColumn</code></li>
+          <li><code>deleteColumn</code></li>
+          <li><code>addCard</code></li>
+          <li><code>moveCard</code></li>
+          <li><code>deleteCard</code></li>
+        </ul>
+      </div>
+      <div class="card">
+        <h3>DB</h3>
+        <ul>
+          <li><code>User</code></li>
+          <li><code>Board</code></li>
+          <li><code>Column</code></li>
+          <li><code>Card</code></li>
+        </ul>
+      </div>
+    </div>
+
+    <h2>3. Patrones base</h2>
+    <table>
+      <thead>
+        <tr>
+          <th>Patrón</th>
+          <th>Qué significa</th>
+          <th>Archivos típicos</th>
+          <th>Dificultad</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Editar lógica existente</td>
+          <td>Cambiar un mensaje, orden, condición, expiración, límite, retorno.</td>
+          <td>service o controller</td>
+          <td>Fácil</td>
+        </tr>
+        <tr>
+          <td>Endpoint nuevo</td>
+          <td>Crear una funcionalidad nueva conectando URL, controller y Prisma.</td>
+          <td>route + controller + service</td>
+          <td>Media</td>
+        </tr>
+        <tr>
+          <td>Campo nuevo</td>
+          <td>Agregar una propiedad nueva al modelo y propagarla.</td>
+          <td>schema.prisma + zod + controller + service</td>
+          <td>Media-alta</td>
+        </tr>
+        <tr>
+          <td>Seguridad / ownership</td>
+          <td>Controlar acceso por token, rol o dueño del recurso.</td>
+          <td>middleware + route + service/controller</td>
+          <td>Difícil</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <h2>4. Fácil</h2>
+
+    <div class="card">
+      <span class="tag easy">Patrón 1</span>
+      <h3>Editar lógica existente</h3>
+      <p><strong>Qué hace:</strong> cambia algo que ya existe sin crear endpoints nuevos ni tocar la estructura general.</p>
+      <p><strong>Cómo afrontarlo:</strong> busca la función que ya hace algo parecido y modifica solo la línea clave. No reescribas todo.</p>
+      <pre><code>// Ejemplo mental
+// "cambiar expiración del token"
+// → buscar jwt.sign(..., { expiresIn: '7d' })
+// → reemplazar solo ese valor</code></pre>
+      <ul>
+        <li>Cambiar expiración del JWT.</li>
+        <li>Cambiar mensajes de error o éxito.</li>
+        <li>Cambiar orden de resultados con <code>orderBy</code>.</li>
+        <li>Quitar o cambiar columnas por defecto.</li>
+        <li>Agregar un dato al <code>return</code>.</li>
+        <li>Limitar cantidad con <code>count()</code> + <code>if</code> + <code>throw new Error()</code>.</li>
+      </ul>
+    </div>
+
+    <div class="card">
+      <h3>Cheatcode de límites</h3>
+      <pre><code>const funcion = async (foreignId, data) =&gt; {
+  const count = await prisma.model.count({ where: { foreignId } })
+  if (count &gt;= LIMITE) {
+    throw new Error('Mensaje del límite')
+  }
+
+  return prisma.model.create({
+    data: { foreignId, ...data }
+  })
+}</code></pre>
+    </div>
+
+    <div class="card">
+      <h3>Cheatcode de validación sencilla</h3>
+      <pre><code>if (!campo?.trim()) {
+  return res.status(400).json({ error: 'Campo requerido' })
+}</code></pre>
+    </div>
+
+    <h2>5. Medio</h2>
+
+    <div class="card">
+      <span class="tag mid">Patrón 2</span>
+      <h3>Endpoint nuevo</h3>
+      <p><strong>Qué hace:</strong> agrega una operación nueva como editar, obtener uno por id, renombrar, etc.</p>
+      <p><strong>Cómo afrontarlo:</strong> piensa en la secuencia <code>service → controller → route</code>. Siempre empieza por el service porque es la parte más concreta.</p>
+      <pre><code>// SERVICE
+const nuevaFuncion = (id, dato) =&gt;
+  prisma.model.update({
+    where: { id },
+    data: { campo: dato }
+  })
+
+// CONTROLLER
+const nuevaFuncion = async (req, res) =&gt; {
+  try {
+    const { dato } = req.body
+    if (!dato?.trim()) return res.status(400).json({ error: 'Dato requerido' })
+    const result = await service.nuevaFuncion(Number(req.params.id), dato.trim())
+    res.json(result)
+  } catch (e) {
+    res.status(500).json({ error: e.message })
+  }
+}
+
+// ROUTE
+router.patch('/ruta/:id', validate(schema), c.nuevaFuncion)</code></pre>
+      <ul>
+        <li>Editar título de card.</li>
+        <li>Editar nombre de board.</li>
+        <li>Editar label de column.</li>
+        <li>Obtener board por id.</li>
+        <li>Obtener cards de una columna.</li>
+        <li>Duplicar un board.</li>
+      </ul>
+    </div>
+
+    <div class="card">
+      <h3>Cheatcode para GET por id con ownership</h3>
+      <pre><code>// SERVICE
+const getById = (id, userId) =&gt;
+  prisma.board.findFirst({
+    where: { id, userId },
+    include: {
+      columns: {
+        include: { cards: { orderBy: { order: 'asc' } } },
+        orderBy: { order: 'asc' }
+      }
+    }
+  })
+
+// CONTROLLER
+const getById = async (req, res) =&gt; {
+  try {
+    const item = await boardService.getById(Number(req.params.id), req.user.id)
+    if (!item) return res.status(404).json({ error: 'No encontrado' })
+    res.json(item)
+  } catch (e) {
+    res.status(500).json({ error: e.message })
+  }
+}</code></pre>
+    </div>
+
+    <h2>6. Medio-alto</h2>
+
+    <div class="card">
+      <span class="tag hard">Patrón 3</span>
+      <h3>Campo nuevo en la base de datos</h3>
+      <p><strong>Qué hace:</strong> agrega una propiedad como <code>description</code>, <code>color</code>, <code>priority</code>, <code>dueDate</code>, <code>username</code>.</p>
+      <p><strong>Cómo afrontarlo:</strong> sigue siempre el mismo orden. No improvises.</p>
+      <ol>
+        <li>Agregar el campo en <code>schema.prisma</code>.</li>
+        <li>Actualizar el schema de Zod si entra por request.</li>
+        <li>Actualizar el service para guardar o editar el campo.</li>
+        <li>Actualizar el controller para leerlo desde <code>req.body</code>.</li>
+        <li>Si es necesario, actualizar la route o reutilizar la existente.</li>
+      </ol>
+      <pre><code>// schema.prisma
+model Card {
+  id          Int     @id @default(autoincrement())
+  title       String
+  description String?
+  columnId    Int
+  column      Column  @relation(fields: [columnId], references: [id], onDelete: Cascade)
+  order       Int     @default(0)
+}</code></pre>
+      <pre><code>// zod
+const addCardSchema = z.object({
+  title: z.string().min(1).max(200),
+  description: z.string().max(500).optional()
+})</code></pre>
+      <pre><code>// service
+const addCard = (columnId, title, description) =&gt;
+  prisma.card.create({
+    data: {
+      columnId,
+      title,
+      description: description || null
+    }
+  })</code></pre>
+      <ul>
+        <li>Agregar <code>description</code> a Card.</li>
+        <li>Agregar <code>color</code> a Column.</li>
+        <li>Agregar <code>priority</code> a Card.</li>
+        <li>Agregar <code>dueDate</code> a Card.</li>
+        <li>Agregar <code>username</code> a User.</li>
+        <li>Agregar <code>isArchived</code> a Board.</li>
+      </ul>
+    </div>
+
+    <div class="card">
+      <h3>Comando mental de Prisma</h3>
+      <pre><code>npx prisma migrate dev --name nombre_del_cambio</code></pre>
+      <p>Si el profe te pregunta teóricamente, di: “edito <code>schema.prisma</code>, hago migración, actualizo service/controller/schema Zod”.</p>
+    </div>
+
+    <h2>7. Difícil</h2>
+
+    <div class="card">
+      <span class="tag boss">Patrón 4</span>
+      <h3>Seguridad, roles y ownership</h3>
+      <p><strong>Qué hace:</strong> decide si un usuario autenticado puede o no hacer algo.</p>
+      <p><strong>Cómo afrontarlo:</strong> piensa siempre en <code>req.user</code>. Si el token ya fue verificado, ahí viven <code>id</code>, <code>email</code> y <code>role</code>.</p>
+      <pre><code>// route protegida por rol
+router.get('/admin/users', verifyToken, authorizeRoles('admin'), authController.getAllUsers)</code></pre>
+      <pre><code>// ownership en service con filtros
+const deleteBoard = (id, userId) =&gt;
+  prisma.board.deleteMany({ where: { id, userId } })</code></pre>
+      <pre><code>// ownership en controller si necesitas buscar primero
+const algo = await service.getById(Number(req.params.id))
+if (!algo) return res.status(404).json({ error: 'No encontrado' })
+if (algo.userId !== req.user.id) return res.status(403).json({ error: 'Sin permiso' })</code></pre>
+      <ul>
+        <li>Solo admin puede ver todos los usuarios.</li>
+        <li>Solo dueño puede borrar board.</li>
+        <li>Solo dueño puede ver board por id.</li>
+        <li>Bloquear creación si usuario está suspendido.</li>
+        <li>Permitir acceso a varios roles con <code>authorizeRoles('admin', 'user')</code>.</li>
+      </ul>
+    </div>
+
+    <h2>8. Casos que más probablemente te pasen</h2>
+    <table>
+      <thead>
+        <tr>
+          <th>Caso</th>
+          <th>Nivel</th>
+          <th>Qué tocar</th>
+          <th>Cómo pensarlo</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Cambiar expiración JWT</td>
+          <td>Fácil</td>
+          <td>auth service</td>
+          <td>Buscar <code>jwt.sign</code> y reemplazar <code>expiresIn</code>.</td>
+        </tr>
+        <tr>
+          <td>Cambiar mensajes</td>
+          <td>Fácil</td>
+          <td>controller</td>
+          <td>Buscar <code>res.json</code> o <code>res.status(...).json</code>.</td>
+        </tr>
+        <tr>
+          <td>Limitar cantidad de boards/cards</td>
+          <td>Fácil-media</td>
+          <td>service</td>
+          <td><code>count()</code> → <code>if</code> → <code>throw</code> → <code>create()</code>.</td>
+        </tr>
+        <tr>
+          <td>Editar card/board/column</td>
+          <td>Media</td>
+          <td>service + controller + route + schema si entra body</td>
+          <td>Pensar en <code>update()</code> con <code>id</code>.</td>
+        </tr>
+        <tr>
+          <td>Traer un item por id</td>
+          <td>Media</td>
+          <td>service + controller + route</td>
+          <td><code>findFirst</code> o <code>findUnique</code> + 404 si no existe.</td>
+        </tr>
+        <tr>
+          <td>Agregar campo nuevo</td>
+          <td>Media-alta</td>
+          <td>prisma + zod + controller + service</td>
+          <td>Seguir orden fijo, no saltarte pasos.</td>
+        </tr>
+        <tr>
+          <td>Validar rol o dueño</td>
+          <td>Difícil</td>
+          <td>middleware y/o service/controller</td>
+          <td>Pensar en <code>req.user</code> y filtros por <code>userId</code>.</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <h2>9. Plantillas rápidas</h2>
+
+    <div class="card">
+      <h3>Plantilla controller</h3>
+      <pre><code>const funcion = async (req, res) =&gt; {
+  try {
+    const { campo } = req.body
+    if (!campo?.trim()) return res.status(400).json({ error: 'Campo requerido' })
+
+    const result = await service.funcion(Number(req.params.id), campo.trim())
+    res.json(result)
+  } catch (e) {
+    res.status(500).json({ error: e.message })
+  }
+}</code></pre>
+    </div>
+
+    <div class="card">
+      <h3>Plantilla service update</h3>
+      <pre><code>const funcion = (id, campo) =&gt;
+  prisma.model.update({
+    where: { id },
+    data: { campo }
+  })</code></pre>
+    </div>
+
+    <div class="card">
+      <h3>Plantilla zod</h3>
+      <pre><code>const schema = z.object({
+  campo: z
+    .string({ required_error: 'Campo obligatorio' })
+    .min(1, 'No puede estar vacío')
+    .max(100, 'No puede superar 100 caracteres')
+})</code></pre>
+    </div>
+
+    <h2>10. Errores típicos que te pueden hacer perder tiempo</h2>
+    <div class="card">
+      <ul>
+        <li>Olvidar <code>async</code> cuando agregas un <code>await</code>.</li>
+        <li>Olvidar convertir <code>req.params.id</code> a número con <code>Number()</code>.</li>
+        <li>Poner comas entre métodos encadenados de Zod.</li>
+        <li>Usar <code>findUnique</code> con filtros que no son únicos.</li>
+        <li>Olvidar exportar la nueva función en <code>module.exports</code>.</li>
+        <li>Crear la función en controller pero no agregar la route.</li>
+        <li>Agregar route y controller pero olvidar el schema de validación.</li>
+        <li>Usar <code>throw('mensaje')</code> en vez de <code>throw new Error('mensaje')</code>.</li>
+      </ul>
+    </div>
+
+    <h2>11. Mantra de parcial</h2>
+    <div class="card">
+      <p>Si me piden cambiar algo: primero identifico si es lógica, endpoint, campo o seguridad.</p>
+      <p>Si es lógica: busco la función y toco lo mínimo.</p>
+      <p>Si es endpoint: hago service, luego controller, luego route.</p>
+      <p>Si es campo: prisma, zod, service, controller.</p>
+      <p>Si es seguridad: pienso en middleware, <code>req.user</code> y <code>userId</code>.</p>
+    </div>
+  </div>
+</body>
+</html>
