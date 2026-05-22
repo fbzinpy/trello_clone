@@ -137,6 +137,31 @@ function showMsg(text, ok = false) {
   setTimeout(() => { mensaje.value = '' }, 4000)
 }
 
+function isValidEmail(value) {
+  return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value)
+}
+
+function validateAuthForm() {
+  const normalizedEmail = email.value.trim()
+
+  if (!normalizedEmail || !password.value) {
+    showMsg('Completa todos los campos')
+    return null
+  }
+
+  if (!isValidEmail(normalizedEmail)) {
+    showMsg('Ingresa un correo valido')
+    return null
+  }
+
+  if (mode.value === 'register' && password.value.length < 6) {
+    showMsg('La contrasena debe tener al menos 6 caracteres')
+    return null
+  }
+
+  return { email: normalizedEmail, password: password.value }
+}
+
 function submitAuth() {
   if (loading.value) return
   if (mode.value === 'login') { login(); return }
@@ -144,16 +169,18 @@ function submitAuth() {
 }
 
 async function login() {
-  if (!email.value || !password.value) return showMsg('Completa todos los campos')
+  const payload = validateAuthForm()
+  if (!payload) return
+
   loading.value = true
   try {
     const res = await fetch('http://localhost:3000/api/auth/login', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ email: email.value, password: password.value })
+      body: JSON.stringify(payload)
     })
     const data = await res.json()
-    if (!res.ok) return showMsg(data.error)
+    if (!res.ok) return showMsg(data.error || 'No se pudo iniciar sesion')
     auth.setToken(data.token)
     // Guardar datos del usuario en Pinia
     const meRes = await api.get('/auth/me')
@@ -168,16 +195,18 @@ async function login() {
 }
 
 async function register() {
-  if (!email.value || !password.value) return showMsg('Completa todos los campos')
+  const payload = validateAuthForm()
+  if (!payload) return
+
   loading.value = true
   try {
     const res = await fetch('http://localhost:3000/api/auth/register', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ email: email.value, password: password.value })
+      body: JSON.stringify(payload)
     })
     const data = await res.json()
-    if (!res.ok) return showMsg(data.error)
+    if (!res.ok) return showMsg(data.error || 'No se pudo crear la cuenta')
     showMsg('¡Cuenta creada! Ahora inicia sesión.', true)
     mode.value = 'login'
   } catch {

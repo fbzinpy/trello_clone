@@ -9,10 +9,10 @@ const register = async (req, res) => {
     }
 
     const result = await authService.register(email, password)
-    res.json(result)
+    res.status(201).json(result)
   } catch (error) {
     console.error(error)
-    res.status(400).json({ error: 'Error al registrar usuario' })
+    res.status(error.statusCode || 500).json({ error: error.message || 'Error al registrar usuario' })
   }
 }
 
@@ -24,7 +24,7 @@ const login = async (req, res) => {
     res.json(result)
   } catch (error) {
     console.error(error)
-    res.status(400).json({ error: error.message || 'Error en login' })
+    res.status(error.statusCode || 500).json({ error: error.message || 'Error en login' })
   }
 }
 

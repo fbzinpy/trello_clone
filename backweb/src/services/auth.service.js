@@ -4,10 +4,18 @@ const prisma = require('../prisma')
 
 const JWT_SECRET = process.env.JWT_SECRET || 'changeme_secret'
 
+class AuthError extends Error {
+  constructor(message, statusCode = 400) {
+    super(message)
+    this.name = 'AuthError'
+    this.statusCode = statusCode
+  }
+}
+
 const register = async (email, password) => {
   const existing = await prisma.user.findUnique({ where: { email } })
   if (existing) {
-    throw new Error('El usuario ya existe')
+    throw new AuthError('El usuario ya existe', 409)
   }
 
   const hashed = await bcrypt.hash(password, 10)
@@ -27,13 +35,13 @@ const login = async (email, password) => {
   const user = await prisma.user.findUnique({ where: { email } })
 
   if (!user) {
-    throw new Error('Usuario no existe')
+    throw new AuthError('Credenciales incorrectas', 401)
   }
 
   const valid = await bcrypt.compare(password, user.password)
 
   if (!valid) {
-    throw new Error('Contraseña incorrecta')
+    throw new AuthError('Credenciales incorrectas', 401)
   }
 
   const token = jwt.sign(
