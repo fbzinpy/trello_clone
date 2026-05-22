@@ -2,34 +2,13 @@ const authService = require('../services/auth.service')
 
 const register = async (req, res) => {
   try {
-    const { email, password, birthDate } = req.body
+    const { email, password } = req.body
 
-    if (!email || !password || !birthDate) {
+    if (!email || !password) {
       return res.status(400).json({ error: 'Datos incompletos' })
     }
 
-    // Calcular edad
-    const birth = new Date(birthDate)
-    const today = new Date()
-    let age = today.getFullYear() - birth.getFullYear()
-    const m = today.getMonth() - birth.getMonth()
-    if (m < 0 || (m === 0 && today.getDate() < birth.getDate())) age--
-
-    // Menores de 16 → bloqueados
-    if (age < 16) {
-      return res.status(403).json({ error: 'Debes tener al menos 16 años para registrarte' })
-    }
-
-    // Entre 16 y 17 años → no se guarda en BD
-    if (age >= 16 && age < 18) {
-      return res.status(200).json({
-        minor_accepted: true,
-        message: 'Registro recibido, pero tu cuenta no será guardada por ser menor de 18 años.'
-      })
-    }
-
-    // Mayor o igual a 18 → flujo normal
-    const result = await authService.register(email, password, birthDate)
+    const result = await authService.register(email, password)
     res.json(result)
   } catch (error) {
     console.error(error)
