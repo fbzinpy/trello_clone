@@ -67,6 +67,15 @@
           <!-- v-model mantiene email/password sincronizados con los refs del script. -->
           <input v-model="email" type="email" placeholder="Correo electrónico" class="form-input" />
           <input v-model="password" type="password" placeholder="Contraseña" class="form-input" />
+          <div v-if="mode === 'register'" class="input-group">
+            <label class="input-label">Fecha de nacimiento</label>
+            <input
+              v-model="birthDate"
+              type="date"
+              class="form-input"
+              :max="maxDate"
+            />
+          </div>
           <p v-if="mensaje" :class="['mensaje', mensajeOk ? 'ok' : 'error']">{{ mensaje }}</p>
           <button v-if="mode === 'login'" type="submit" class="btn-primary" :disabled="loading">
             {{ loading ? 'Cargando...' : 'Entrar' }}
@@ -110,6 +119,8 @@ import api from '../axios'
 
 const email = ref('')
 const password = ref('')
+const birthDate = ref('')
+const maxDate = new Date().toISOString().split('T')[0]
 const mode = ref('login')
 const loading = ref(false)
 const mensaje = ref('')
@@ -168,7 +179,6 @@ async function login() {
     const data = await res.json()
     if (!res.ok) return showMsg(data.error)
     auth.setToken(data.token)
-    // Guardar datos del usuario en Pinia
     const meRes = await api.get('/auth/me')
     auth.setUser(meRes.data.user)
     showMsg('¡Login exitoso! Redirigiendo...', true)
@@ -182,16 +192,27 @@ async function login() {
 
 // Registro: crea el usuario y deja el formulario listo para iniciar sesion.
 async function register() {
-  if (!email.value || !password.value) return showMsg('Completa todos los campos')
+  if (!email.value || !password.value || !birthDate.value)
+    return showMsg('Completa todos los campos, incluyendo tu fecha de nacimiento')
+
   loading.value = true
   try {
     const res = await fetch('http://localhost:3000/api/auth/register', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ email: email.value, password: password.value })
+      body: JSON.stringify({
+        email: email.value,
+        password: password.value,
+        birthDate: birthDate.value
+      })
     })
     const data = await res.json()
     if (!res.ok) return showMsg(data.error)
+
+    if (data.minor_accepted) {
+      return showMsg(data.message, true)
+    }
+
     showMsg('¡Cuenta creada! Ahora inicia sesión.', true)
     mode.value = 'login'
   } catch {
@@ -313,6 +334,8 @@ async function register() {
   font-family: 'Inter', sans-serif;
 }
 .form-input:focus { border-color: #0052CC; }
+.input-group { display: flex; flex-direction: column; gap: 4px; }
+.input-label { font-size: 0.8rem; font-weight: 600; color: #44546f; }
 .btn-primary {
   width: 100%; padding: 11px; background: #0052CC;
   color: white; border: none; border-radius: 6px;

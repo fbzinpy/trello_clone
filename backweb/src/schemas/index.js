@@ -6,7 +6,10 @@ const registerSchema = z.object({
     .email('Correo inválido'),
   password: z
     .string({ required_error: 'La contraseña es obligatoria' })
-    .min(6, 'La contraseña debe tener al menos 6 caracteres')
+    .min(6, 'La contraseña debe tener al menos 6 caracteres'),
+  birthDate: z
+    .string({ required_error: 'La fecha de nacimiento es obligatoria' })
+    .refine(val => !isNaN(Date.parse(val)), { message: 'Fecha inválida' })
 })
 
 const loginSchema = z.object({

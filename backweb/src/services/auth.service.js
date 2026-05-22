@@ -4,7 +4,7 @@ const prisma = require('../prisma')
 
 const JWT_SECRET = process.env.JWT_SECRET || 'changeme_secret'
 
-const register = async (email, password) => {
+const register = async (email, password, birthDate) => {
   const existing = await prisma.user.findUnique({ where: { email } })
   if (existing) {
     throw new Error('El usuario ya existe')
@@ -17,6 +17,7 @@ const register = async (email, password) => {
       email,
       password: hashed,
       role: 'user',
+      birthDate: new Date(birthDate),
     },
   })
 
