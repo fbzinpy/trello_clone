@@ -1,4 +1,5 @@
 <template>
+  <!-- draggable=true habilita el drag nativo del navegador. -->
   <div
     class="board-card"
     :class="{ dragging: isDragging }"
@@ -6,6 +7,7 @@
     @dragstart="$emit('dragstart', $event)"
     @dragend="$emit('dragend')"
   >
+    <!-- Doble click permite editar el titulo solo en memoria local. -->
     <textarea
       v-if="editing"
       class="card-edit-input"
@@ -29,10 +31,12 @@
 <script setup>
 import { ref } from 'vue'
 
+// card es el objeto de datos; isDragging solo cambia la apariencia mientras se arrastra.
 defineProps({
   card:       { type: Object,  required: true },
   isDragging: { type: Boolean, default: false }
 })
+// El padre decide que hacer al arrastrar o eliminar.
 defineEmits(['dragstart', 'dragend', 'delete'])
 
 const editing = ref(false)

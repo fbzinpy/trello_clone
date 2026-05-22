@@ -1,4 +1,5 @@
 <template>
+  <!-- click.self cierra solo si se hace click en el fondo, no dentro del modal. -->
   <div class="modal-overlay" @click.self="close">
     <form class="modal" @submit.prevent="submit">
       <div class="modal-header">
@@ -11,6 +12,7 @@
 
       <label class="field">
         <span>Nombre del tablero</span>
+        <!-- v-model controla el nombre y actualiza la vista previa en tiempo real. -->
         <input
           ref="inputRef"
           v-model="boardName"
@@ -24,6 +26,7 @@
       <p v-if="error" class="error">{{ error }}</p>
 
       <div class="preview">
+        <!-- previewName usa "Nuevo tablero" si el input esta vacio. -->
         <div class="preview-title">{{ previewName }}</div>
         <div class="preview-columns">
           <span></span>
@@ -43,18 +46,22 @@
 <script setup>
 import { computed, nextTick, onMounted, ref } from 'vue'
 
+// El padre decide que hacer al cerrar o crear.
 const emit = defineEmits(['close', 'create'])
 
 const boardName = ref('')
 const error = ref('')
 const inputRef = ref(null)
 
+// Texto derivado para pintar la tarjeta de preview.
 const previewName = computed(() => boardName.value.trim() || 'Nuevo tablero')
 
+// Cierra el modal avisando al padre.
 function close() {
   emit('close')
 }
 
+// Valida nombre minimo y emite "create" con el valor limpio.
 function submit() {
   const name = boardName.value.trim()
 
@@ -66,6 +73,7 @@ function submit() {
   emit('create', name)
 }
 
+// Enfoca el input apenas aparece el modal.
 onMounted(async () => {
   await nextTick()
   inputRef.value?.focus()

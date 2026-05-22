@@ -1,5 +1,6 @@
 <template>
   <aside class="sidebar">
+    <!-- Click en el logo vuelve a la seccion principal de tableros. -->
     <div class="sidebar-logo" @click="emit('select-section', 'tableros')">
       <svg viewBox="0 0 24 24" fill="none" aria-label="Logo" width="28" height="28">
         <rect width="24" height="24" rx="4" fill="#0052CC"/>
@@ -11,6 +12,7 @@
     <nav>
       <p class="menu-title">General</p>
       <ul>
+        <!-- Cada opcion emite al padre la seccion que debe quedar activa. -->
         <li
           :class="['nav-item', { active: selectedSection === 'tableros' }]"
           @click="emit('select-section', 'tableros')"
@@ -36,10 +38,12 @@
 </template>
 
 <script setup>
+// selectedSection llega desde Dashboard para pintar la opcion activa.
 defineProps({
   selectedSection: { type: String, default: 'tableros' }
 })
 
+// select-section es el evento que Dashboard escucha para cambiar de vista.
 const emit = defineEmits(['select-section'])
 </script>
 

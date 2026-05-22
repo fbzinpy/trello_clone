@@ -1,8 +1,12 @@
 <template>
+  <!-- Aqui Vue Router renderiza la vista actual: Login, Dashboard o Precios. -->
   <router-view />
 </template>
 
 <style>
+/* Estilos globales de la app.
+   Esta zona se usa sobre todo para forzar el modo oscuro en componentes hijos,
+   incluso si esos componentes tienen estilos scoped. */
 body {
   margin: 0;
   padding: 0;

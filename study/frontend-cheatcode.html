@@ -1,0 +1,526 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Cheatcode Frontend - Trello Clone</title>
+  <style>
+    :root {
+      --bg: #0b1020;
+      --panel: #111827;
+      --soft: #1f2937;
+      --text: #e5e7eb;
+      --muted: #9ca3af;
+      --green: #22c55e;
+      --yellow: #f59e0b;
+      --orange: #f97316;
+      --red: #ef4444;
+      --blue: #38bdf8;
+      --violet: #a78bfa;
+      --code: #07111f;
+      --border: #334155;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      font-family: Arial, Helvetica, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.55;
+    }
+
+    .wrap {
+      max-width: 1120px;
+      margin: 0 auto;
+      padding: 32px 20px 80px;
+    }
+
+    h1, h2, h3 { line-height: 1.2; }
+    h1 { font-size: 2.2rem; margin-bottom: 8px; }
+
+    h2 {
+      margin-top: 42px;
+      padding-bottom: 8px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    h3 { margin-top: 24px; }
+    p, li { color: var(--text); }
+    .muted { color: var(--muted); }
+
+    .card {
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 18px;
+      margin: 16px 0;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 16px;
+    }
+
+    .tag {
+      display: inline-block;
+      padding: 4px 10px;
+      border-radius: 999px;
+      font-size: 0.9rem;
+      font-weight: bold;
+      margin-bottom: 8px;
+    }
+
+    .easy { background: rgba(34,197,94,.15); color: var(--green); }
+    .mid { background: rgba(245,158,11,.15); color: var(--yellow); }
+    .hard { background: rgba(249,115,22,.15); color: var(--orange); }
+    .boss { background: rgba(239,68,68,.15); color: var(--red); }
+    .info { background: rgba(56,189,248,.15); color: var(--blue); }
+    .logic { background: rgba(167,139,250,.15); color: var(--violet); }
+
+    code, pre {
+      font-family: Consolas, Monaco, monospace;
+      background: var(--code);
+      color: #dbeafe;
+    }
+
+    code { padding: 2px 6px; border-radius: 6px; }
+
+    pre {
+      padding: 14px;
+      border-radius: 12px;
+      overflow-x: auto;
+      border: 1px solid var(--border);
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 16px 0;
+      background: var(--panel);
+      border: 1px solid var(--border);
+    }
+
+    th, td {
+      border: 1px solid var(--border);
+      padding: 10px;
+      text-align: left;
+      vertical-align: top;
+    }
+
+    th { background: var(--soft); }
+    ul { padding-left: 20px; }
+
+    .flow {
+      white-space: pre-wrap;
+      font-weight: bold;
+      color: #bfdbfe;
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 16px;
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <h1>Cheatcode Frontend — Trello Clone</h1>
+    <p class="muted">Guía de estudio para preguntas de lógica frontend en vivo. El objetivo no es memorizar todo: es saber dónde tocar, qué patrón usar y cómo no romper el flujo.</p>
+
+    <h2>1. Flujo sagrado del frontend</h2>
+    <div class="flow">USUARIO HACE ALGO
+↓
+COMPONENTE captura click / input / submit / drag
+↓
+VALIDACION o LOGICA local
+↓
+EMIT al padre o llamada API
+↓
+ESTADO reactivo cambia
+↓
+VUE repinta la pantalla</div>
+
+    <div class="card">
+      <span class="tag info">Regla madre</span>
+      <ul>
+        <li>Si cambia lo visual, mira el <code>&lt;template&gt;</code> o el <code>&lt;style&gt;</code>.</li>
+        <li>Si cambia una condicion, validacion o comportamiento, mira el <code>&lt;script setup&gt;</code>.</li>
+        <li>Si un componente hijo avisa algo al padre, busca <code>emit(...)</code>.</li>
+        <li>Si el padre le pasa datos al hijo, busca <code>props</code> o atributos como <code>:boards</code>, <code>:board</code>, <code>:col</code>.</li>
+        <li>Si hay backend, casi siempre pasa por <code>api</code> desde <code>axios.js</code>.</li>
+      </ul>
+    </div>
+
+    <h2>2. Mapa mental de archivos</h2>
+    <div class="grid">
+      <div class="card">
+        <h3>Entrada y rutas</h3>
+        <ul>
+          <li><code>main.js</code>: monta Vue, Pinia y Router.</li>
+          <li><code>App.vue</code>: contiene <code>&lt;router-view /&gt;</code>.</li>
+          <li><code>router/index.js</code>: rutas y proteccion con token.</li>
+          <li><code>store/auth.js</code>: token, usuario y logout.</li>
+          <li><code>axios.js</code>: baseURL e interceptor JWT.</li>
+        </ul>
+      </div>
+
+      <div class="card">
+        <h3>Vistas</h3>
+        <ul>
+          <li><code>Login.vue</code>: login, registro, mensajes y redireccion.</li>
+          <li><code>Dashboard.vue</code>: centro de control de secciones, busqueda, tableros y modales.</li>
+          <li><code>Precios.vue</code>: pagina publica estatica.</li>
+        </ul>
+      </div>
+
+      <div class="card">
+        <h3>Tableros y Kanban</h3>
+        <ul>
+          <li><code>BoardGrid.vue</code>: pinta tarjetas de tablero y menu.</li>
+          <li><code>CreateBoardModal.vue</code>: formulario para crear tablero.</li>
+          <li><code>BoardModal.vue</code>: tablero abierto, columnas y tarjetas.</li>
+          <li><code>KanbanColumn.vue</code>: una columna.</li>
+          <li><code>KanbanCard.vue</code>: una tarjeta.</li>
+        </ul>
+      </div>
+
+      <div class="card">
+        <h3>Logica reutilizable</h3>
+        <ul>
+          <li><code>useBoards.js</code>: cargar, crear, duplicar y borrar tableros.</li>
+          <li><code>useDragDrop.js</code>: mover tarjetas entre columnas.</li>
+          <li><code>AppHeader.vue</code>: buscador, crear, perfil, tema y logout.</li>
+          <li><code>AppSidebar.vue</code>: cambiar seccion activa.</li>
+        </ul>
+      </div>
+    </div>
+
+    <h2>3. Tabla rapida: pregunta → archivo</h2>
+    <table>
+      <thead>
+        <tr>
+          <th>Si el profe pide...</th>
+          <th>Archivo probable</th>
+          <th>Que buscar</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Validar login o registro</td>
+          <td><code>Login.vue</code></td>
+          <td><code>submitAuth</code>, <code>login</code>, <code>register</code>, <code>showMsg</code></td>
+        </tr>
+        <tr>
+          <td>Proteger o redirigir rutas</td>
+          <td><code>router/index.js</code></td>
+          <td><code>routes</code>, <code>meta.requiresAuth</code>, <code>beforeEach</code></td>
+        </tr>
+        <tr>
+          <td>Filtrar, ordenar o cambiar seccion</td>
+          <td><code>Dashboard.vue</code></td>
+          <td><code>search</code>, <code>selectedSection</code>, <code>computed</code>, <code>filterBoards</code></td>
+        </tr>
+        <tr>
+          <td>Crear, duplicar o borrar tableros</td>
+          <td><code>useBoards.js</code> y <code>Dashboard.vue</code></td>
+          <td><code>createBoard</code>, <code>duplicateBoard</code>, <code>deleteBoard</code>, handlers</td>
+        </tr>
+        <tr>
+          <td>Validar nombre de tablero</td>
+          <td><code>CreateBoardModal.vue</code></td>
+          <td><code>submit()</code>, <code>error</code>, <code>emit('create')</code></td>
+        </tr>
+        <tr>
+          <td>Crear/eliminar columnas</td>
+          <td><code>BoardModal.vue</code></td>
+          <td><code>confirmAddColumn</code>, <code>deleteColumn</code></td>
+        </tr>
+        <tr>
+          <td>Crear/eliminar tarjetas</td>
+          <td><code>KanbanColumn.vue</code> y <code>BoardModal.vue</code></td>
+          <td><code>submitCard</code>, <code>addCard</code>, <code>deleteCard</code></td>
+        </tr>
+        <tr>
+          <td>Mover tarjetas</td>
+          <td><code>useDragDrop.js</code></td>
+          <td><code>onDrop</code>, <code>draggingCard</code>, <code>dragOverCol</code></td>
+        </tr>
+        <tr>
+          <td>Buscador, perfil, tema o logout</td>
+          <td><code>AppHeader.vue</code></td>
+          <td><code>updateSearch</code>, <code>toggleDarkMode</code>, <code>saveProfile</code>, <code>logout</code></td>
+        </tr>
+      </tbody>
+    </table>
+
+    <h2>4. Patrones de logica frontend</h2>
+
+    <div class="card">
+      <span class="tag easy">Patron 1</span>
+      <h3>Validar antes de ejecutar</h3>
+      <p><strong>Usalo cuando:</strong> pidan minimo de caracteres, campo obligatorio, no permitir vacios, evitar duplicados.</p>
+      <pre><code>function submit() {
+  const value = input.value.trim()
+
+  if (!value) {
+    error.value = 'Campo requerido'
+    return
+  }
+
+  if (value.length &lt; 3) {
+    error.value = 'Minimo 3 caracteres'
+    return
+  }
+
+  emit('create', value)
+}</code></pre>
+      <p><strong>Archivos tipicos:</strong> <code>Login.vue</code>, <code>CreateBoardModal.vue</code>, <code>KanbanColumn.vue</code>, <code>BoardModal.vue</code>.</p>
+    </div>
+
+    <div class="card">
+      <span class="tag easy">Patron 2</span>
+      <h3>Confirmar antes de borrar</h3>
+      <p><strong>Usalo cuando:</strong> pidan confirmar eliminar tablero, columna o tarjeta.</p>
+      <pre><code>function handleDelete(item) {
+  const ok = confirm(`Eliminar "${item.name}"?`)
+  if (!ok) return
+
+  deleteItem(item.id)
+}</code></pre>
+      <p><strong>Idea clave:</strong> el <code>return</code> corta la funcion si el usuario cancela.</p>
+    </div>
+
+    <div class="card">
+      <span class="tag mid">Patron 3</span>
+      <h3>Filtrar listas</h3>
+      <p><strong>Usalo cuando:</strong> pidan buscar por nombre, mostrar solo algunos tableros o filtrar segun condicion.</p>
+      <pre><code>function filterBoards(boards, term) {
+  const normalizedTerm = term.trim().toLowerCase()
+
+  if (!normalizedTerm) return boards
+
+  return boards.filter((board) =>
+    board.name.toLowerCase().includes(normalizedTerm)
+  )
+}</code></pre>
+      <p><strong>Archivo clave:</strong> <code>Dashboard.vue</code>.</p>
+    </div>
+
+    <div class="card">
+      <span class="tag mid">Patron 4</span>
+      <h3>Ordenar sin romper el estado original</h3>
+      <p><strong>Usalo cuando:</strong> pidan ordenar tableros alfabeticamente o por cantidad.</p>
+      <pre><code>const sortedBoards = computed(() =&gt; {
+  return [...userBoards.value].sort((a, b) =&gt;
+    a.name.localeCompare(b.name)
+  )
+})</code></pre>
+      <p><strong>Idea clave:</strong> <code>[...array]</code> crea copia. Asi no mutas el arreglo original sin querer.</p>
+    </div>
+
+    <div class="card">
+      <span class="tag mid">Patron 5</span>
+      <h3>Limitar cantidad</h3>
+      <p><strong>Usalo cuando:</strong> pidan maximo de tableros, columnas o tarjetas.</p>
+      <pre><code>function handleCreateBoard(name) {
+  if (userBoards.value.length &gt;= 5) {
+    alert('Maximo 5 tableros')
+    return
+  }
+
+  createBoard(name)
+}</code></pre>
+      <p><strong>Donde mirar:</strong> si el limite es de tableros, <code>Dashboard.vue</code> o <code>useBoards.js</code>. Si es de tarjetas/columnas, <code>BoardModal.vue</code>.</p>
+    </div>
+
+    <div class="card">
+      <span class="tag mid">Patron 6</span>
+      <h3>Cambiar donde se inserta algo</h3>
+      <p><strong>Usalo cuando:</strong> pidan que algo aparezca al inicio en vez de al final.</p>
+      <pre><code>// Al final
+lista.push(item)
+
+// Al inicio
+lista.unshift(item)</code></pre>
+      <p><strong>Ejemplos:</strong> columna nueva al inicio, tarjeta nueva al inicio, tablero nuevo al inicio.</p>
+    </div>
+
+    <div class="card">
+      <span class="tag hard">Patron 7</span>
+      <h3>Mover y revertir si falla</h3>
+      <p><strong>Usalo cuando:</strong> pidan cambiar logica de drag/drop o manejar error de API.</p>
+      <pre><code>// 1. mover localmente para que la UI responda rapido
+const [card] = fromCol.cards.splice(idx, 1)
+toCol.cards.push(card)
+
+try {
+  // 2. persistir en backend
+  await api.patch(`/boards/cards/${card.id}/move`, { columnId: toCol.id })
+} catch (e) {
+  // 3. revertir si falla
+  toCol.cards.pop()
+  fromCol.cards.splice(idx, 0, card)
+  alert('No se pudo mover la tarjeta')
+}</code></pre>
+      <p><strong>Archivo clave:</strong> <code>useDragDrop.js</code>.</p>
+    </div>
+
+    <h2>5. Props, emits y estado: lo que mas preguntan</h2>
+
+    <div class="grid">
+      <div class="card">
+        <span class="tag logic">Props</span>
+        <h3>Padre → hijo</h3>
+        <p>El padre le pasa datos al hijo.</p>
+        <pre><code>&lt;BoardGrid
+  :boards="filteredUserBoards"
+  :show-add="true"
+/&gt;</code></pre>
+        <p>En el hijo:</p>
+        <pre><code>defineProps({
+  boards: { type: Array, required: true }
+})</code></pre>
+      </div>
+
+      <div class="card">
+        <span class="tag logic">Emit</span>
+        <h3>Hijo → padre</h3>
+        <p>El hijo no decide todo. Avisa al padre que algo paso.</p>
+        <pre><code>// Hijo
+emit('delete-board', board)
+
+// Padre
+@delete-board="handleDeleteBoard"</code></pre>
+      </div>
+
+      <div class="card">
+        <span class="tag logic">Ref</span>
+        <h3>Estado editable</h3>
+        <p>Para valores que cambian: inputs, modal abierto, seccion activa.</p>
+        <pre><code>const search = ref('')
+search.value = ''</code></pre>
+      </div>
+
+      <div class="card">
+        <span class="tag logic">Computed</span>
+        <h3>Estado derivado</h3>
+        <p>Para valores calculados desde otros estados.</p>
+        <pre><code>const filteredBoards = computed(() =&gt;
+  filterBoards(userBoards.value, search.value)
+)</code></pre>
+      </div>
+    </div>
+
+    <h2>6. Casos probables de parcial</h2>
+
+    <div class="card">
+      <span class="tag mid">Caso</span>
+      <h3>Validar que el tablero tenga minimo 3 caracteres</h3>
+      <p><strong>Archivo:</strong> <code>CreateBoardModal.vue</code></p>
+      <p><strong>Funcion:</strong> <code>submit()</code></p>
+      <pre><code>const name = boardName.value.trim()
+
+if (name.length &lt; 3) {
+  error.value = 'El nombre debe tener minimo 3 caracteres.'
+  return
+}</code></pre>
+    </div>
+
+    <div class="card">
+      <span class="tag mid">Caso</span>
+      <h3>Confirmar antes de eliminar tablero</h3>
+      <p><strong>Archivo:</strong> <code>Dashboard.vue</code></p>
+      <p><strong>Funcion:</strong> <code>handleDeleteBoard(board)</code></p>
+      <pre><code>const ok = confirm(`Eliminar el tablero "${board.name}"?`)
+if (!ok) return</code></pre>
+    </div>
+
+    <div class="card">
+      <span class="tag mid">Caso</span>
+      <h3>Hacer privada la ruta de precios</h3>
+      <p><strong>Archivo:</strong> <code>router/index.js</code></p>
+      <pre><code>{ path: '/precios', component: Precios, meta: { requiresAuth: true } }</code></pre>
+      <p>Ya existe el <code>beforeEach</code> que redirige si no hay token.</p>
+    </div>
+
+    <div class="card">
+      <span class="tag mid">Caso</span>
+      <h3>Si ya hay sesion, mandar de login a dashboard</h3>
+      <p><strong>Archivo:</strong> <code>router/index.js</code></p>
+      <pre><code>router.beforeEach((to) =&gt; {
+  const auth = useAuthStore()
+
+  if (to.path === '/' &amp;&amp; auth.token) {
+    return '/dashboard'
+  }
+
+  if (to.meta.requiresAuth &amp;&amp; !auth.token) {
+    return '/'
+  }
+})</code></pre>
+    </div>
+
+    <div class="card">
+      <span class="tag mid">Caso</span>
+      <h3>Limpiar buscador al cambiar de seccion</h3>
+      <p><strong>Archivo:</strong> <code>Dashboard.vue</code></p>
+      <p>En vez de asignar directo desde el template, creas una funcion:</p>
+      <pre><code>function selectSection(section) {
+  selectedSection.value = section
+  search.value = ''
+}</code></pre>
+      <p>Y en el template usas:</p>
+      <pre><code>@select-section="selectSection"</code></pre>
+    </div>
+
+    <div class="card">
+      <span class="tag hard">Caso</span>
+      <h3>Tarjeta nueva al inicio de la columna</h3>
+      <p><strong>Archivo:</strong> <code>BoardModal.vue</code></p>
+      <p><strong>Funcion:</strong> <code>addCard</code></p>
+      <pre><code>// Cambiar esto
+col.cards.push(data)
+
+// Por esto
+col.cards.unshift(data)</code></pre>
+    </div>
+
+    <div class="card">
+      <span class="tag hard">Caso</span>
+      <h3>Tarjeta movida al inicio de columna destino</h3>
+      <p><strong>Archivo:</strong> <code>useDragDrop.js</code></p>
+      <p><strong>Funcion:</strong> <code>onDrop</code></p>
+      <pre><code>// Cambiar esto
+toColObj.cards.push(card)
+
+// Por esto
+toColObj.cards.unshift(card)</code></pre>
+      <p>Si haces esto, tambien debes ajustar el revert: en vez de <code>pop()</code>, quitar del inicio con <code>shift()</code>.</p>
+    </div>
+
+    <h2>7. Checklist para responder en vivo</h2>
+    <div class="card">
+      <ol>
+        <li>Escucha la palabra clave: login, ruta, tablero, columna, tarjeta, drag, buscador, tema.</li>
+        <li>Abre el archivo dueño usando la tabla de esta guia.</li>
+        <li>Decide si es <code>template</code>, <code>script setup</code> o <code>style</code>.</li>
+        <li>Busca el handler: <code>submit</code>, <code>handle...</code>, <code>add...</code>, <code>delete...</code>, <code>onDrop</code>.</li>
+        <li>Aplica el patron: validar, confirmar, filtrar, ordenar, limitar, insertar o revertir.</li>
+        <li>Cambia lo minimo y prueba.</li>
+      </ol>
+    </div>
+
+    <h2>8. Mantra de parcial frontend</h2>
+    <div class="card">
+      <p>Si el profe pide logica, casi siempre va en <code>&lt;script setup&gt;</code>.</p>
+      <p>Si pide mostrar u ocultar algo, busco <code>v-if</code>, <code>v-show</code> o clases dinamicas.</p>
+      <p>Si pide cambiar una lista, busco <code>filter</code>, <code>sort</code>, <code>push</code>, <code>unshift</code> o <code>splice</code>.</p>
+      <p>Si pide comunicar componentes, pienso en <code>props</code> para bajar datos y <code>emit</code> para subir eventos.</p>
+      <p>Si pide API, busco <code>api.get</code>, <code>api.post</code>, <code>api.patch</code> o <code>api.delete</code>.</p>
+      <p>Si me pierdo, vuelvo al flujo: usuario hace algo → handler → estado cambia → Vue repinta.</p>
+    </div>
+  </div>
+</body>
+</html>

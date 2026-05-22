@@ -1,4 +1,5 @@
 <template>
+  <!-- La columna recibe eventos HTML5 de drag/drop y los convierte en eventos Vue. -->
   <div
     class="board-col"
     :class="{ 'drag-over': isDragOver }"
@@ -8,6 +9,7 @@
   >
     <!-- Cabecera columna -->
     <div class="board-col-top">
+      <!-- Doble click activa edicion local del titulo de columna. -->
       <input
         v-if="editingTitle"
         class="col-title-input"
@@ -31,6 +33,7 @@
 
     <!-- Tarjetas -->
     <div class="board-card-list">
+      <!-- KanbanCard es tonto: muestra una tarjeta y avisa drag/delete al padre. -->
       <KanbanCard
         v-for="card in col.cards"
         :key="card.id"
@@ -48,6 +51,7 @@
 
     <!-- Agregar tarjeta -->
     <div class="add-card-box">
+      <!-- Enter o boton emiten add-card con colKey + texto. -->
       <input
         v-model="newCardText"
         type="text"
@@ -64,12 +68,14 @@
 import { ref } from 'vue'
 import KanbanCard from './KanbanCard.vue'
 
+// col trae label/cards/key. Los otros props vienen del composable de drag/drop.
 const props = defineProps({
   col:          { type: Object,  required: true },
   isDragOver:   { type: Boolean, default: false },
   draggingCard: { type: Object,  default: null  }
 })
 
+// Todos los cambios importantes suben al padre; este componente no llama API.
 const emit = defineEmits([
   'dragover', 'dragleave', 'drop',
   'dragstart', 'dragend',
@@ -79,6 +85,7 @@ const emit = defineEmits([
 const editingTitle = ref(false)
 const newCardText  = ref('')
 
+// Valida texto y avisa al padre que debe crear la tarjeta.
 function submitCard() {
   const text = newCardText.value.trim()
   if (!text) return

@@ -2,12 +2,14 @@
   <div>
     <h3 class="section-title">{{ title }}</h3>
     <div class="cards">
+      <!-- Renderiza cualquier lista de tableros que el padre le pase por props. -->
       <div
         v-for="board in boards"
         :key="board.id"
         class="card"
         @click="$emit('open', board)"
       >
+        <!-- stop evita que el click del menu tambien abra el tablero. -->
         <button
           v-if="showMenu"
           class="card-menu-trigger"
@@ -30,6 +32,7 @@
         </div>
         <span class="card-title">{{ board.name }}</span>
       </div>
+      <!-- Esta tarjeta extra solo aparece cuando showAdd=true. -->
       <div v-if="showAdd" class="card add" @click="$emit('create')">+ Crear nuevo</div>
     </div>
   </div>
@@ -38,6 +41,7 @@
 <script setup>
 import { ref, onMounted, onBeforeUnmount } from 'vue'
 
+// Props de presentacion: el padre decide titulo, datos y controles visibles.
 defineProps({
   title:   { type: String, required: true },
   boards:  { type: Array,  required: true },
@@ -45,31 +49,38 @@ defineProps({
   showMenu: { type: Boolean, default: false }
 })
 
+// Eventos hacia Dashboard: este componente no modifica listas por su cuenta.
 const emit = defineEmits(['open', 'create', 'duplicate-board', 'delete-board'])
 const openMenuId = ref(null)
 
+// Abre/cierra el menu de una tarjeta concreta.
 function toggleMenu(boardId) {
   openMenuId.value = openMenuId.value === boardId ? null : boardId
 }
 
+// Cierra menus al hacer click fuera.
 function closeMenu() {
   openMenuId.value = null
 }
 
+// Reenvia la accion al padre y cierra el menu.
 function duplicateBoard(board) {
   emit('duplicate-board', board)
   closeMenu()
 }
 
+// Reenvia la accion al padre y cierra el menu.
 function deleteBoard(board) {
   emit('delete-board', board)
   closeMenu()
 }
 
+// Listener global para cerrar el menu si el usuario hace click fuera.
 onMounted(() => {
   document.addEventListener('click', closeMenu)
 })
 
+// Limpieza obligatoria para no dejar listeners activos si el componente desaparece.
 onBeforeUnmount(() => {
   document.removeEventListener('click', closeMenu)
 })

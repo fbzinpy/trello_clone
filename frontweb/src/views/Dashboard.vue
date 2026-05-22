@@ -1,12 +1,15 @@
 <template>
   <div class="layout">
+    <!-- Sidebar controla que seccion se ve; el estado vive aqui en Dashboard. -->
     <AppSidebar
       :selected-section="selectedSection"
       @select-section="selectedSection = $event"
     />
     <div class="main">
+      <!-- v-model:search equivale a pasar :search y escuchar update:search. -->
       <AppHeader v-model:search="search" @create-board="openCreateBoardModal" />
       <section class="content">
+        <!-- Vista especial: plantillas no vienen del backend, son datos locales. -->
         <div v-if="selectedSection === 'plantillas'" class="templates-view">
           <div class="section-head">
             <h2 class="page-title">Plantillas</h2>
@@ -24,12 +27,14 @@
             <h2 class="page-title">{{ sectionTitle }}</h2>
             <p class="page-subtitle">{{ sectionSubtitle }}</p>
           </div>
+          <!-- Tableros recientes: se muestran en Inicio y Tableros. -->
           <BoardGrid
             v-if="showRecentBoards"
             title="Visto recientemente"
             :boards="filteredRecentBoards"
             @open="openBoard"
           />
+          <!-- Tableros del usuario: permite crear, duplicar y eliminar. -->
           <BoardGrid
             v-if="showUserBoards"
             title="Tus tableros"
@@ -45,11 +50,13 @@
         </template>
       </section>
     </div>
+    <!-- Modal Kanban: aparece solo cuando hay un tablero seleccionado. -->
     <BoardModal
       v-if="selectedBoard"
       :board="selectedBoard"
       @close="selectedBoard = null"
     />
+    <!-- Modal de creacion: se abre desde header o desde la tarjeta "+ Crear nuevo". -->
     <CreateBoardModal
       v-if="showCreateBoardModal"
       @close="closeCreateBoardModal"
@@ -67,17 +74,23 @@ import BoardModal from '../components/BoardModal.vue'
 import CreateBoardModal from '../components/CreateBoardModal.vue'
 import { useBoards } from '../composables/useBoards'
 
+// useBoards concentra las llamadas API y devuelve listas reactivas.
 const { recentBoards, userBoards, createBoard, duplicateBoard, deleteBoard } = useBoards()
+
+// Estado de pantalla: modal abierto, busqueda y seccion activa.
 const selectedBoard = ref(null)
 const showCreateBoardModal = ref(false)
 const search = ref('')
 const selectedSection = ref('tableros')
+
+// Plantillas fake: funcionan como atajos para crear tableros con nombre base.
 const templates = ref([
   { id: 'tpl-1', name: 'Sprint semanal' },
   { id: 'tpl-2', name: 'Roadmap de producto' },
   { id: 'tpl-3', name: 'Seguimiento de bugs' }
 ])
 
+// Computed = valores derivados. Se recalculan cuando cambia search o las listas.
 const filteredRecentBoards = computed(() => filterBoards(recentBoards.value, search.value))
 const filteredUserBoards = computed(() => filterBoards(userBoards.value, search.value))
 const filteredTemplates = computed(() => filterBoards(templates.value, search.value))
@@ -85,6 +98,7 @@ const filteredTemplates = computed(() => filterBoards(templates.value, search.va
 const showRecentBoards = computed(() => ['tableros', 'inicio'].includes(selectedSection.value))
 const showUserBoards = computed(() => ['tableros', 'mi-espacio'].includes(selectedSection.value))
 
+// Titulo y subtitulo dependen de la seccion seleccionada en el sidebar.
 const sectionTitle = computed(() => {
   if (selectedSection.value === 'inicio') return 'Inicio'
   if (selectedSection.value === 'mi-espacio') return 'Mi espacio'
@@ -97,6 +111,7 @@ const sectionSubtitle = computed(() => {
   return 'Consulta tus tableros recientes y crea nuevos espacios de trabajo.'
 })
 
+// Filtro reutilizable para recientes, usuario y plantillas.
 function filterBoards(boards, term) {
   const normalizedTerm = term.trim().toLowerCase()
 
@@ -107,6 +122,7 @@ function filterBoards(boards, term) {
   return boards.filter((board) => board.name.toLowerCase().includes(normalizedTerm))
 }
 
+// Abrir tablero significa guardar el objeto en selectedBoard; eso muestra BoardModal.
 function openBoard(board) {
   selectedBoard.value = board
 }
@@ -119,22 +135,26 @@ function closeCreateBoardModal() {
   showCreateBoardModal.value = false
 }
 
+// Crea tablero y lleva al usuario a "Mi espacio" para verlo en la lista.
 function handleCreateBoard(name) {
   createBoard(name)
   selectedSection.value = 'mi-espacio'
   closeCreateBoardModal()
 }
 
+// Usa una plantilla creando un tablero nuevo con el nombre de la plantilla.
 function useTemplate(template) {
   createBoard(`${template.name} copia`)
   selectedSection.value = 'mi-espacio'
 }
 
+// Duplicar en este frontend reutiliza createBoard con "copia".
 function handleDuplicateBoard(board) {
   duplicateBoard(board)
   selectedSection.value = 'mi-espacio'
 }
 
+// Si se elimina el tablero que esta abierto, tambien cierra el modal.
 function handleDeleteBoard(board) {
   deleteBoard(board.id)
 

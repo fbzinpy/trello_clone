@@ -1,11 +1,15 @@
 import { ref } from 'vue'
 import api from '../axios'
 
+// Maneja el drag/drop de tarjetas dentro de un tablero.
+// Se separa del componente para que BoardModal sea mas facil de leer.
 export function useDragDrop(board) {
   const dragOverCol  = ref(null)
   const draggingCard = ref(null)
+  // Snapshot recuerda la tarjeta original aunque el evento drag cambie el estado visual.
   let   dragSnapshot = null
 
+  // Guarda que tarjeta empezo a moverse y desde que columna salio.
   function onDragStart({ card, colKey }, nativeEvent) {
     draggingCard.value = { ...card, fromCol: colKey }
     dragSnapshot       = { ...card, fromCol: colKey }
@@ -14,15 +18,22 @@ export function useDragDrop(board) {
     }
   }
 
+  // Limpia estado visual al terminar el drag.
   function onDragEnd() {
     draggingCard.value = null
     dragOverCol.value  = null
   }
 
+  // Quita el resaltado si el mouse sale de la columna actual.
   function onColLeave(colKey) {
     if (dragOverCol.value === colKey) dragOverCol.value = null
   }
 
+  // Drop:
+  // 1. valida origen/destino
+  // 2. mueve localmente para respuesta inmediata
+  // 3. persiste el cambio con PATCH al backend
+  // 4. revierte si la API falla
   async function onDrop(toCol) {
     const snap = dragSnapshot
     dragSnapshot = null

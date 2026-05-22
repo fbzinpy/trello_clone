@@ -12,6 +12,7 @@
 
     <div class="navbar-right">
       <!-- Funciones -->
+      <!-- Cada item usa activeMenu para mostrar su dropdown al pasar el mouse. -->
       <div class="nav-item" @mouseenter="openMenu('funciones')" @mouseleave="closeMenu">
         <span class="nav-link">Funciones ▾</span>
         <div class="dropdown" v-show="activeMenu === 'funciones'">
@@ -58,10 +59,12 @@
 
       <div class="form-wrapper" ref="formRef">
         <div class="tabs">
+          <!-- mode decide si el formulario llama login() o register(). -->
           <button :class="['tab', { active: mode === 'login' }]" @click="mode = 'login'">Iniciar sesión</button>
           <button :class="['tab', { active: mode === 'register' }]" @click="mode = 'register'">Registrarse</button>
         </div>
         <form class="form-body" @submit.prevent="submitAuth">
+          <!-- v-model mantiene email/password sincronizados con los refs del script. -->
           <input v-model="email" type="email" placeholder="Correo electrónico" class="form-input" />
           <input v-model="password" type="password" placeholder="Contraseña" class="form-input" />
           <p v-if="mensaje" :class="['mensaje', mensajeOk ? 'ok' : 'error']">{{ mensaje }}</p>
@@ -118,31 +121,41 @@ const auth = useAuthStore()
 
 let closeTimer = null
 
+// Abre un dropdown especifico del navbar.
 function openMenu(name) {
   clearTimeout(closeTimer)
   activeMenu.value = name
 }
 
+// Espera un poco antes de cerrar para que el menu no parpadee al mover el mouse.
 function closeMenu() {
   closeTimer = setTimeout(() => { activeMenu.value = null }, 150)
 }
 
+// Lleva al usuario al formulario cuando toca los botones del navbar.
 function scrollToForm() {
   formRef.value?.scrollIntoView({ behavior: 'smooth' })
 }
 
+// Muestra mensajes temporales de error/exito debajo de los inputs.
 function showMsg(text, ok = false) {
   mensaje.value = text
   mensajeOk.value = ok
   setTimeout(() => { mensaje.value = '' }, 4000)
 }
 
+// Punto unico del submit: decide segun la pestana activa.
 function submitAuth() {
   if (loading.value) return
   if (mode.value === 'login') { login(); return }
   register()
 }
 
+// Login:
+// 1. manda email/password al backend
+// 2. guarda token en Pinia/localStorage
+// 3. pide /auth/me usando axios con interceptor
+// 4. redirige al dashboard
 async function login() {
   if (!email.value || !password.value) return showMsg('Completa todos los campos')
   loading.value = true
@@ -167,6 +180,7 @@ async function login() {
   }
 }
 
+// Registro: crea el usuario y deja el formulario listo para iniciar sesion.
 async function register() {
   if (!email.value || !password.value) return showMsg('Completa todos los campos')
   loading.value = true

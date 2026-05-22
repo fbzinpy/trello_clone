@@ -1,6 +1,7 @@
 <template>
   <header :class="['header', { compact: settings.compactMode }]">
     <div class="search-wrapper">
+      <!-- El input no cambia search directamente; emite update:search para el v-model del padre. -->
       <input
         :value="search"
         type="text"
@@ -10,6 +11,7 @@
       />
     </div>
     <div class="header-actions">
+      <!-- Cambia darkMode y guarda la preferencia en localStorage. -->
       <button
         :class="['theme-switch', { active: settings.darkMode }]"
         type="button"
@@ -21,6 +23,7 @@
       </button>
       <button class="btn-create" @click="$emit('create-board')">Crear</button>
     </div>
+    <!-- Avatar/perfil: abre menu de cuenta, configuracion y logout. -->
     <div ref="profileRef" class="profile" @click="toggleMenu">
       {{ userInitials }}
       <div v-if="open" class="dropdown" @click.stop>
@@ -35,6 +38,7 @@
   </header>
 
   <div v-if="activePanel === 'profile'" class="modal-overlay" @click.self="closePanel">
+    <!-- Panel de perfil: guarda un nombre visible local, no lo manda al backend. -->
     <form class="modal" @submit.prevent="saveProfile">
       <div class="modal-header">
         <div>
@@ -67,6 +71,7 @@
   </div>
 
   <div v-if="activePanel === 'settings'" class="modal-overlay" @click.self="closePanel">
+    <!-- Panel de configuracion: guarda preferencias visuales en localStorage. -->
     <form class="modal" @submit.prevent="saveSettings">
       <div class="modal-header">
         <div>
@@ -117,10 +122,12 @@ import { ref, computed, onMounted, onBeforeUnmount } from 'vue'
 import { useRouter } from 'vue-router'
 import { useAuthStore } from '../store/auth'
 
+// search viene del Dashboard mediante v-model:search.
 defineProps({
   search: { type: String, default: '' }
 })
 
+// update:search alimenta el v-model; create-board abre el modal en Dashboard.
 const emit = defineEmits(['update:search', 'create-board'])
 
 const auth = useAuthStore()
@@ -131,6 +138,7 @@ const activePanel = ref(null)
 const copiedEmail = ref(false)
 const settingsSaved = ref(false)
 
+// Valores base por si localStorage esta vacio o corrupto.
 const defaultSettings = {
   accentColor: '#0052CC',
   compactMode: false,
@@ -143,6 +151,8 @@ const profileDraft = ref(profileName.value)
 const settings = ref(loadSettings())
 const settingsDraft = ref({ ...settings.value })
 
+// Decodifica el JWT solo para mostrar email/iniciales en UI.
+// No valida seguridad: la seguridad real la hace el backend.
 function decodeToken(token) {
   try { return JSON.parse(atob(token.split('.')[1])) } catch { return {} }
 }
@@ -152,20 +162,24 @@ const userEmail = computed(() => tokenData.value.email || 'usuario@trelloclone.c
 const displayName = computed(() => profileName.value || userEmail.value.split('@')[0])
 const userInitials = computed(() => displayName.value.slice(0, 3).toUpperCase())
 
+// Abre/cierra el dropdown del avatar.
 function toggleMenu() {
   open.value = !open.value
 }
 
+// Propaga el texto buscado hacia Dashboard.
 function updateSearch(event) {
   emit('update:search', event.target.value)
 }
 
+// Si se hace click fuera del avatar/dropdown, se cierra el menu.
 function handleClickOutside(event) {
   if (!profileRef.value?.contains(event.target)) {
     open.value = false
   }
 }
 
+// Lee preferencias desde localStorage con fallback seguro.
 function loadSettings() {
   try {
     return { ...defaultSettings, ...JSON.parse(localStorage.getItem('userSettings') || '{}') }
@@ -174,16 +188,19 @@ function loadSettings() {
   }
 }
 
+// Variable CSS global: permite que varios componentes usen el color elegido.
 function applyAccentColor(color) {
   document.documentElement.style.setProperty('--user-accent', color)
 }
 
+// Aplica/quita la clase dark-mode en los nodos principales.
 function applyTheme(isDark) {
   document.documentElement.classList.toggle('dark-mode', isDark)
   document.body?.classList.toggle('dark-mode', isDark)
   document.getElementById('app')?.classList.toggle('dark-mode', isDark)
 }
 
+// Accion rapida del switch de tema en el header.
 function toggleDarkMode() {
   settings.value = { ...settings.value, darkMode: !settings.value.darkMode }
   settingsDraft.value = { ...settings.value }
@@ -191,6 +208,7 @@ function toggleDarkMode() {
   applyTheme(settings.value.darkMode)
 }
 
+// Abre modal de perfil o configuracion y prepara sus drafts.
 function openPanel(panel) {
   activePanel.value = panel
   open.value = false
@@ -200,10 +218,12 @@ function openPanel(panel) {
   settingsDraft.value = { ...settings.value }
 }
 
+// Cierra cualquier panel activo.
 function closePanel() {
   activePanel.value = null
 }
 
+// Usa la Clipboard API para copiar el correo visible.
 async function copyEmail() {
   try {
     await navigator.clipboard.writeText(userEmail.value)
@@ -213,6 +233,7 @@ async function copyEmail() {
   }
 }
 
+// Guarda el nombre visible solo en el navegador.
 function saveProfile() {
   profileName.value = profileDraft.value.trim()
 
@@ -225,6 +246,7 @@ function saveProfile() {
   closePanel()
 }
 
+// Persiste preferencias y aplica cambios visuales inmediatamente.
 function saveSettings() {
   settings.value = { ...settingsDraft.value }
   localStorage.setItem('userSettings', JSON.stringify(settings.value))
@@ -233,11 +255,13 @@ function saveSettings() {
   settingsSaved.value = true
 }
 
+// Vuelve a los valores por defecto.
 function resetSettings() {
   settingsDraft.value = { ...defaultSettings }
   saveSettings()
 }
 
+// Cierra sesion: limpia Pinia/localStorage y vuelve al login.
 function logout() {
   auth.logout()
   open.value = false
@@ -245,12 +269,14 @@ function logout() {
   router.push('/')
 }
 
+// Al montar, activa click-outside y reaplica preferencias guardadas.
 onMounted(() => {
   document.addEventListener('click', handleClickOutside)
   applyAccentColor(settings.value.accentColor)
   applyTheme(settings.value.darkMode)
 })
 
+// Al desmontar, se remueve el listener global.
 onBeforeUnmount(() => {
   document.removeEventListener('click', handleClickOutside)
 })

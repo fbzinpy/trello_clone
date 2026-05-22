@@ -1,4 +1,6 @@
 :root {
+  /* Variables globales generadas por el starter de Vite.
+     En esta app la mayoria de estilos reales estan dentro de los .vue. */
   --text: #6b6375;
   --text-h: #08060d;
   --bg: #fff;

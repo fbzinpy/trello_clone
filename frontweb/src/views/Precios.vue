@@ -1,4 +1,5 @@
 <template>
+  <!-- Pagina publica de precios; no usa estado ni backend. -->
   <nav class="navbar">
     <div class="navbar-left">
       <svg viewBox="0 0 24 24" fill="none" width="32" height="32">
@@ -20,6 +21,8 @@
     </div>
 
     <div class="planes-grid">
+      <!-- Cada plan es una tarjeta estatica. Si pidieran hacerlo dinamico,
+           se podria convertir este bloque en un array + v-for. -->
       <!-- FREE -->
       <div class="plan-card">
         <div class="plan-tier">FREE</div>
@@ -89,7 +92,9 @@
   </main>
 </template>
 
-<script setup></script>
+<script setup>
+// No hay logica aqui: la vista solo renderiza contenido estatico.
+</script>
 
 <style scoped>
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');

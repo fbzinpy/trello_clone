@@ -9,6 +9,7 @@
         <button class="modal-close" @click="$emit('close')">✕</button>
       </div>
       <div class="modal-body">
+        <!-- Una columna Kanban por cada columna del tablero recibido. -->
         <KanbanColumn
           v-for="col in board.columns"
           :key="col.key"
@@ -58,7 +59,8 @@ const props = defineProps({
 })
 defineEmits(['close'])
 
-// Normalizar columnas: asegurar que tengan .key basado en .id
+// Normalizar columnas: asegurar que tengan .key basado en .id.
+// El frontend usa key como identificador estable para drag/drop y v-for.
 props.board.columns.forEach(col => {
   if (!col.key) col.key = String(col.id)
 })
@@ -68,6 +70,7 @@ const { dragOverCol, draggingCard, onDragStart, onDragEnd, onColLeave, onDrop } 
 const addingColumn = ref(false)
 const newColLabel  = ref('')
 
+// Crea una columna llamando al backend y luego la agrega localmente al tablero abierto.
 async function confirmAddColumn() {
   const label = newColLabel.value.trim()
   if (!label) return
@@ -82,11 +85,13 @@ async function confirmAddColumn() {
   }
 }
 
+// Cancela el formulario de nueva columna y limpia el input.
 function cancelAddColumn() {
   newColLabel.value  = ''
   addingColumn.value = false
 }
 
+// Elimina la columna en backend y despues la quita de la lista local.
 async function deleteColumn(colKey) {
   const col = props.board.columns.find(c => c.key === colKey)
   if (!col) return
@@ -98,6 +103,7 @@ async function deleteColumn(colKey) {
   }
 }
 
+// Crea una tarjeta dentro de la columna indicada.
 async function addCard({ colKey, text }) {
   const col = props.board.columns.find(c => c.key === colKey)
   if (!col || !text.trim()) return
@@ -109,6 +115,7 @@ async function addCard({ colKey, text }) {
   }
 }
 
+// Elimina una tarjeta en backend y luego la filtra del arreglo local.
 async function deleteCard({ colKey, cardId }) {
   const col = props.board.columns.find(c => c.key === colKey)
   if (!col) return
