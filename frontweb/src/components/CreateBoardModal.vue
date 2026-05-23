@@ -23,6 +23,19 @@
         />
       </label>
 
+      <label class="field">
+        <span>Validador parcial</span>
+        <!-- v-model controla el nombre y actualiza la vista previa en tiempo real. -->
+        <input
+          ref="inputRef"
+          v-model="boardName"
+          class="input"
+          type="text"
+          placeholder="Debe tener entre 50 y 100 caracteres"
+          maxlength="100"
+        />
+      </label>
+
       <p v-if="error" class="error">{{ error }}</p>
 
       <div class="preview">
