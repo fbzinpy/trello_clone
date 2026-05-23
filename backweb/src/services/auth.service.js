@@ -4,18 +4,10 @@ const prisma = require('../prisma')
 
 const JWT_SECRET = process.env.JWT_SECRET || 'changeme_secret'
 
-class AuthError extends Error {
-  constructor(message, statusCode = 400) {
-    super(message)
-    this.name = 'AuthError'
-    this.statusCode = statusCode
-  }
-}
-
-const register = async (email, password) => {
+const register = async (email, password, edad) => {
   const existing = await prisma.user.findUnique({ where: { email } })
   if (existing) {
-    throw new AuthError('El usuario ya existe', 409)
+    throw new Error('El usuario ya existe')
   }
 
   const hashed = await bcrypt.hash(password, 10)
@@ -25,6 +17,7 @@ const register = async (email, password) => {
       email,
       password: hashed,
       role: 'user',
+      ...(edad !== undefined && edad > 20 ? { edad } : {})
     },
   })
 
@@ -35,13 +28,13 @@ const login = async (email, password) => {
   const user = await prisma.user.findUnique({ where: { email } })
 
   if (!user) {
-    throw new AuthError('Credenciales incorrectas', 401)
+    throw new Error('Usuario no existe')
   }
 
   const valid = await bcrypt.compare(password, user.password)
 
   if (!valid) {
-    throw new AuthError('Credenciales incorrectas', 401)
+    throw new Error('Contraseña incorrecta')
   }
 
   const token = jwt.sign(
@@ -55,7 +48,7 @@ const login = async (email, password) => {
 
 const getAllUsers = async () => {
   return prisma.user.findMany({
-    select: { id: true, email: true, role: true, createdAt: true },
+    select: { id: true, email: true, role: true, edad: true, createdAt: true },
   })
 }
 

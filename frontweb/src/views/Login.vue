@@ -64,6 +64,15 @@
         <form class="form-body" @submit.prevent="submitAuth">
           <input v-model="email" type="email" placeholder="Correo electrónico" class="form-input" />
           <input v-model="password" type="password" placeholder="Contraseña" class="form-input" />
+          <input
+            v-if="mode === 'register'"
+            v-model.number="edad"
+            type="number"
+            min="16"
+            max="30"
+            placeholder="Edad (16 - 30 años)"
+            class="form-input"
+          />
           <p v-if="mensaje" :class="['mensaje', mensajeOk ? 'ok' : 'error']">{{ mensaje }}</p>
           <button v-if="mode === 'login'" type="submit" class="btn-primary" :disabled="loading">
             {{ loading ? 'Cargando...' : 'Entrar' }}
@@ -107,6 +116,7 @@ import api from '../axios'
 
 const email = ref('')
 const password = ref('')
+const edad = ref('')
 const mode = ref('login')
 const loading = ref(false)
 const mensaje = ref('')
@@ -154,12 +164,24 @@ function validateAuthForm() {
     return null
   }
 
-  if (mode.value === 'register' && password.value.length < 6) {
-    showMsg('La contrasena debe tener al menos 6 caracteres')
-    return null
+  if (mode.value === 'register') {
+    if (password.value.length < 6) {
+      showMsg('La contrasena debe tener al menos 6 caracteres')
+      return null
+    }
+
+    const e = Number(edad.value)
+    if (!edad.value || isNaN(e) || !Number.isInteger(e) || e < 16 || e > 30) {
+      showMsg('La edad debe ser un número entero entre 16 y 30 años')
+      return null
+    }
   }
 
-  return { email: normalizedEmail, password: password.value }
+  return {
+    email: normalizedEmail,
+    password: password.value,
+    ...(mode.value === 'register' ? { edad: Number(edad.value) } : {})
+  }
 }
 
 function submitAuth() {
@@ -182,7 +204,6 @@ async function login() {
     const data = await res.json()
     if (!res.ok) return showMsg(data.error || 'No se pudo iniciar sesion')
     auth.setToken(data.token)
-    // Guardar datos del usuario en Pinia
     const meRes = await api.get('/auth/me')
     auth.setUser(meRes.data.user)
     showMsg('¡Login exitoso! Redirigiendo...', true)

@@ -2,13 +2,14 @@ const authService = require('../services/auth.service')
 
 const register = async (req, res) => {
   try {
-    const { email, password } = req.body
+    const { email, password, edad } = req.body
 
     if (!email || !password) {
       return res.status(400).json({ error: 'Datos incompletos' })
     }
 
-    const result = await authService.register(email, password)
+    const edadNum = edad !== undefined ? Number(edad) : undefined
+    const result = await authService.register(email, password, edadNum)
     res.status(201).json(result)
   } catch (error) {
     console.error(error)
