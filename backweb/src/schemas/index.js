@@ -26,7 +26,11 @@ const createBoardSchema = z.object({
   name: z
     .string({ required_error: 'El nombre del tablero es obligatorio' })
     .min(1, 'El nombre no puede estar vacío')
-    .max(100, 'El nombre no puede superar 100 caracteres')
+    .max(100, 'El nombre no puede superar 100 caracteres'),
+  validador: z
+    .string({ required_error: 'El validador es obligatorio' })
+    .min(51, 'El validador debe tener más de 50 caracteres')
+    .max(100, 'El validador no puede superar 100 caracteres')
 })
 
 const addColumnSchema = z.object({

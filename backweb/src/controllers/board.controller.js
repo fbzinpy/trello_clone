@@ -11,9 +11,19 @@ const getBoards = async (req, res) => {
 
 const createBoard = async (req, res) => {
   try {
-    const { name } = req.body
+    const { name, validador } = req.body
+
     if (!name?.trim()) return res.status(400).json({ error: 'Nombre requerido' })
-    const board = await boardService.createBoard(req.user.id, name.trim())
+
+    if (!validador || validador.trim().length <= 50) {
+      return res.status(400).json({ error: 'El validador debe tener más de 50 caracteres' })
+    }
+
+    if (validador.trim().length > 100) {
+      return res.status(400).json({ error: 'El validador no puede superar 100 caracteres' })
+    }
+
+    const board = await boardService.createBoard(req.user.id, name.trim(), validador.trim())
     res.status(201).json(board)
   } catch (e) {
     res.status(500).json({ error: e.message })

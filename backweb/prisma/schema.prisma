@@ -18,12 +18,13 @@ model User {
 }
 
 model Board {
-  id        Int      @id @default(autoincrement())
-  name      String
-  userId    Int
-  user      User     @relation(fields: [userId], references: [id])
-  columns   Column[]
-  createdAt DateTime @default(now())
+  id         Int      @id @default(autoincrement())
+  name       String
+  validador  String?
+  userId     Int
+  user       User     @relation(fields: [userId], references: [id])
+  columns    Column[]
+  createdAt  DateTime @default(now())
 }
 
 model Column {

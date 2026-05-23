@@ -12,10 +12,11 @@ const getBoards = (userId) =>
     orderBy: { createdAt: 'desc' }
   })
 
-const createBoard = (userId, name) =>
+const createBoard = (userId, name, validador) =>
   prisma.board.create({
     data: {
       name,
+      validador,
       userId,
       columns: {
         create: [
