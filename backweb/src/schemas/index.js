@@ -8,10 +8,9 @@ const registerSchema = z.object({
     .string({ required_error: 'La contraseña es obligatoria' })
     .min(6, 'La contraseña debe tener al menos 6 caracteres'),
   edad: z
-    .number({ invalid_type_error: 'La edad debe ser un número' })
+    .number({ required_error: 'La edad es obligatoria', invalid_type_error: 'La edad debe ser un número' })
     .int('La edad debe ser un número entero')
-    .gt(20, 'Solo se registran usuarios mayores de 20 años')
-    .optional()
+    .gt(20, 'Debes tener más de 20 años para registrarte')
 })
 
 const loginSchema = z.object({

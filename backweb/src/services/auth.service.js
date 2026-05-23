@@ -5,9 +5,17 @@ const prisma = require('../prisma')
 const JWT_SECRET = process.env.JWT_SECRET || 'changeme_secret'
 
 const register = async (email, password, edad) => {
+  if (edad === undefined || edad === null || edad <= 20) {
+    const err = new Error('Debes tener más de 20 años para registrarte')
+    err.statusCode = 400
+    throw err
+  }
+
   const existing = await prisma.user.findUnique({ where: { email } })
   if (existing) {
-    throw new Error('El usuario ya existe')
+    const err = new Error('El usuario ya existe')
+    err.statusCode = 400
+    throw err
   }
 
   const hashed = await bcrypt.hash(password, 10)
@@ -17,7 +25,7 @@ const register = async (email, password, edad) => {
       email,
       password: hashed,
       role: 'user',
-      ...(edad !== undefined && edad > 20 ? { edad } : {})
+      edad
     },
   })
 
