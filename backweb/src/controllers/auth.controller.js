@@ -2,18 +2,17 @@ const authService = require('../services/auth.service')
 
 const register = async (req, res) => {
   try {
-    const { email, password, edad } = req.body
+    const { email, password } = req.body
 
     if (!email || !password) {
       return res.status(400).json({ error: 'Datos incompletos' })
     }
 
-    const edadNum = edad !== undefined ? Number(edad) : undefined
-    const result = await authService.register(email, password, edadNum)
-    res.status(201).json(result)
+    const result = await authService.register(email, password)
+    res.json(result)
   } catch (error) {
     console.error(error)
-    res.status(error.statusCode || 500).json({ error: error.message || 'Error al registrar usuario' })
+    res.status(400).json({ error: 'Error al registrar usuario' })
   }
 }
 
@@ -25,7 +24,7 @@ const login = async (req, res) => {
     res.json(result)
   } catch (error) {
     console.error(error)
-    res.status(error.statusCode || 500).json({ error: error.message || 'Error en login' })
+    res.status(400).json({ error: error.message || 'Error en login' })
   }
 }
 
