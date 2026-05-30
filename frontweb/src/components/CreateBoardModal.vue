@@ -23,6 +23,19 @@
         />
       </label>
 
+      <!-- DESCOMENTAR para activar campo descripción del tablero -->
+      <!-- <label class="field" style="margin-top: 14px">
+        <span>Descripción del tablero <span class="field-hint">(entre 50 y 100 caracteres)</span></span>
+        <textarea
+          v-model="descripcion"
+          class="input textarea"
+          placeholder="Describe brevemente tu tablero..."
+          maxlength="100"
+          rows="3"
+        />
+        <span :class="['char-count', charCountClass]">{{ descripcion.length }} / 100</span>
+      </label> -->
+
       <p v-if="error" class="error">{{ error }}</p>
 
       <div class="preview">
@@ -50,11 +63,21 @@ import { computed, nextTick, onMounted, ref } from 'vue'
 const emit = defineEmits(['close', 'create'])
 
 const boardName = ref('')
+// const descripcion = ref('')   // DESCOMENTAR para activar campo descripción
 const error = ref('')
 const inputRef = ref(null)
 
 // Texto derivado para pintar la tarjeta de preview.
 const previewName = computed(() => boardName.value.trim() || 'Nuevo tablero')
+
+// DESCOMENTAR para activar el indicador de color del contador
+// const charCountClass = computed(() => {
+//   const len = descripcion.value.length
+//   if (len === 0) return ''
+//   if (len < 50) return 'count-error'
+//   if (len <= 100) return 'count-ok'
+//   return 'count-error'
+// })
 
 // Cierra el modal avisando al padre.
 function close() {
@@ -70,7 +93,20 @@ function submit() {
     return
   }
 
+  // DESCOMENTAR para activar validación de descripción
+  // const desc = descripcion.value.trim()
+  // if (desc.length < 50) {
+  //   error.value = 'La descripción debe tener al menos 50 caracteres.'
+  //   return
+  // }
+  // if (desc.length > 100) {
+  //   error.value = 'La descripción no puede superar 100 caracteres.'
+  //   return
+  // }
+
   emit('create', name)
+  // DESCOMENTAR la línea de abajo y borrar la de arriba al activar descripción
+  // emit('create', { name, descripcion: desc })
 }
 
 // Enfoca el input apenas aparece el modal.
@@ -91,9 +127,14 @@ onMounted(async () => {
 .modal-title { font-size: 1.35rem; font-weight: 800; line-height: 1.2; }
 .modal-close { width: 34px; height: 34px; border: none; border-radius: 8px; background: #f1f2f4; color: #44546f; font-size: 1rem; font-weight: 700; cursor: pointer; }
 .modal-close:hover { background: #e2e8f0; }
-.field { display: flex; flex-direction: column; gap: 8px; color: #44546f; font-size: .86rem; font-weight: 700; }
+.field { display: flex; flex-direction: column; gap: 6px; color: #44546f; font-size: .86rem; font-weight: 700; }
+.field-hint { font-weight: 400; color: #8993a4; font-size: .78rem; }
 .input { width: 100%; border: 1.5px solid #cfd7e6; border-radius: 8px; padding: 11px 12px; color: #172b4d; font-size: .95rem; outline: none; transition: border-color .15s, box-shadow .15s; }
 .input:focus { border-color: #0052CC; box-shadow: 0 0 0 3px rgba(0,82,204,.12); }
+.textarea { resize: vertical; min-height: 72px; font-family: 'Inter', sans-serif; }
+.char-count { font-size: .75rem; font-weight: 600; text-align: right; }
+.count-ok { color: #006644; }
+.count-error { color: #bf2600; }
 .error { margin-top: 10px; border-radius: 8px; background: #ffebe6; color: #bf2600; padding: 9px 11px; font-size: .84rem; font-weight: 600; }
 .preview { margin-top: 16px; min-height: 108px; border-radius: 12px; padding: 14px; background: linear-gradient(135deg,#6366f1 0%,#0052CC 52%,#22c55e 100%); box-shadow: inset 0 0 0 1px rgba(255,255,255,.18); display: flex; flex-direction: column; justify-content: space-between; }
 .preview-title { color: white; font-size: .95rem; font-weight: 800; overflow-wrap: anywhere; }
