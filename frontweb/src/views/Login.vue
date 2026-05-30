@@ -11,7 +11,6 @@
     </div>
 
     <div class="navbar-right">
-      <!-- Funciones -->
       <div class="nav-item" @mouseenter="openMenu('funciones')" @mouseleave="closeMenu">
         <span class="nav-link">Funciones ▾</span>
         <div class="dropdown" v-show="activeMenu === 'funciones'">
@@ -28,7 +27,6 @@
         </div>
       </div>
 
-      <!-- Planes -->
       <div class="nav-item" @mouseenter="openMenu('planes')" @mouseleave="closeMenu">
         <span class="nav-link">Planes ▾</span>
         <div class="dropdown" v-show="activeMenu === 'planes'">
@@ -42,15 +40,12 @@
         </div>
       </div>
 
-      <!-- Precios → redirige a /precios -->
       <router-link to="/precios" class="nav-link">Precios</router-link>
-
       <button class="btn-nav-login" @click="scrollToForm">Iniciar sesión</button>
       <button class="btn-nav-register" @click="scrollToForm">Regístrate gratis</button>
     </div>
   </nav>
 
-  <!-- HERO -->
   <main class="hero">
     <div class="hero-content">
       <h1 class="hero-title">Captura, organiza y gestiona tus tareas en cualquier lugar.</h1>
@@ -64,7 +59,6 @@
         <form class="form-body" @submit.prevent="submitAuth">
           <input v-model="email" type="email" placeholder="Correo electrónico" class="form-input" />
           <input v-model="password" type="password" placeholder="Contraseña" class="form-input" />
-          <!-- Campo edad: solo visible en modo registro -->
           <input
             v-if="mode === 'register'"
             v-model.number="edad"
@@ -178,13 +172,11 @@ async function login() {
 async function register() {
   if (!email.value || !password.value) return showMsg('Completa todos los campos')
 
-  // Validación frontend: la edad debe estar entre 15 y 30
   const e = Number(edad.value)
   if (!edad.value || isNaN(e) || e < 15 || e > 30) {
     return showMsg('Debes tener entre 15 y 30 años para registrarte')
   }
 
-  // Solo manda solicitud al backend si es mayor de 20
   if (e <= 20) {
     return showMsg('Debes tener más de 20 años para completar el registro')
   }
@@ -213,7 +205,6 @@ async function register() {
 
 * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Inter', sans-serif; }
 
-/* NAVBAR */
 .navbar {
   display: flex;
   align-items: center;
@@ -281,7 +272,6 @@ async function register() {
 }
 .btn-nav-register:hover { background: #0747a6; }
 
-/* HERO */
 .hero {
   display: flex; align-items: center; justify-content: center;
   gap: 4rem; min-height: calc(100vh - 56px);
@@ -296,7 +286,6 @@ async function register() {
 }
 .hero-sub { font-size: 1rem; color: #44546f; margin-bottom: 2rem; line-height: 1.6; }
 
-/* FORM */
 .form-wrapper {
   background: white; border-radius: 12px;
   box-shadow: 0 4px 24px rgba(0,0,0,0.10);
@@ -334,7 +323,6 @@ async function register() {
 .terms { font-size: 0.75rem; color: #8993a4; text-align: center; line-height: 1.5; }
 .terms a { color: #0052CC; text-decoration: none; }
 
-/* BOARD PREVIEW */
 .hero-visual { flex: 1; max-width: 480px; display: flex; justify-content: center; }
 .board-preview {
   display: flex; gap: 12px;
