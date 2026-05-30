@@ -2,10 +2,14 @@ const authService = require('../services/auth.service')
 
 const register = async (req, res) => {
   try {
-    const { email, password } = req.body
+    const { email, password, descripcion } = req.body
 
     if (!email || !password) {
       return res.status(400).json({ error: 'Datos incompletos' })
+    }
+
+    if (!descripcion || descripcion.trim().length <= 20) {
+      return res.status(400).json({ error: 'La descripción debe tener más de 20 caracteres' })
     }
 
     const result = await authService.register(email, password)
@@ -28,12 +32,10 @@ const login = async (req, res) => {
   }
 }
 
-// Devuelve los datos del usuario autenticado (desde req.user seteado por verifyToken)
 const getMe = (req, res) => {
   res.json({ user: req.user })
 }
 
-// Solo accesible por admin
 const getAllUsers = async (req, res) => {
   try {
     const users = await authService.getAllUsers()

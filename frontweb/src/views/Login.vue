@@ -66,6 +66,14 @@
             placeholder="Edad"
             class="form-input"
           />
+          <input
+            v-if="mode === 'register'"
+            v-model="descripcion"
+            type="text"
+            placeholder="Descripción (15 - 30 caracteres)"
+            class="form-input"
+            maxlength="30"
+          />
           <p v-if="mensaje" :class="['mensaje', mensajeOk ? 'ok' : 'error']">{{ mensaje }}</p>
           <button v-if="mode === 'login'" type="submit" class="btn-primary" :disabled="loading">
             {{ loading ? 'Cargando...' : 'Entrar' }}
@@ -110,6 +118,7 @@ import api from '../axios'
 const email = ref('')
 const password = ref('')
 const edad = ref('')
+const descripcion = ref('')
 const mode = ref('login')
 const loading = ref(false)
 const mensaje = ref('')
@@ -181,12 +190,17 @@ async function register() {
     return showMsg('Debes tener más de 20 años para completar el registro')
   }
 
+  const desc = descripcion.value.trim()
+  if (desc.length < 15 || desc.length > 30) {
+    return showMsg('La descripción debe tener entre 15 y 30 caracteres')
+  }
+
   loading.value = true
   try {
     const res = await fetch('http://localhost:3000/api/auth/register', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ email: email.value, password: password.value })
+      body: JSON.stringify({ email: email.value, password: password.value, descripcion: desc })
     })
     const data = await res.json()
     if (!res.ok) return showMsg(data.error)
