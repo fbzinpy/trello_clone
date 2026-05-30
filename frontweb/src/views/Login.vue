@@ -64,16 +64,14 @@
         <form class="form-body" @submit.prevent="submitAuth">
           <input v-model="email" type="email" placeholder="Correo electrónico" class="form-input" />
           <input v-model="password" type="password" placeholder="Contraseña" class="form-input" />
-          <!-- DESCOMENTAR para activar campo edad -->
-          <!-- <input
+          <!-- Campo edad: solo visible en modo registro -->
+          <input
             v-if="mode === 'register'"
             v-model.number="edad"
             type="number"
-            min="18"
-            max="25"
-            placeholder="Edad (18 - 25 años)"
+            placeholder="Edad"
             class="form-input"
-          /> -->
+          />
           <p v-if="mensaje" :class="['mensaje', mensajeOk ? 'ok' : 'error']">{{ mensaje }}</p>
           <button v-if="mode === 'login'" type="submit" class="btn-primary" :disabled="loading">
             {{ loading ? 'Cargando...' : 'Entrar' }}
@@ -110,7 +108,6 @@
 </template>
 
 <script setup>
-// reset de código 2
 import { ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { useAuthStore } from '../store/auth'
@@ -118,7 +115,7 @@ import api from '../axios'
 
 const email = ref('')
 const password = ref('')
-// const edad = ref('')   // DESCOMENTAR para activar campo edad
+const edad = ref('')
 const mode = ref('login')
 const loading = ref(false)
 const mensaje = ref('')
@@ -167,7 +164,6 @@ async function login() {
     const data = await res.json()
     if (!res.ok) return showMsg(data.error)
     auth.setToken(data.token)
-    // Guardar datos del usuario en Pinia
     const meRes = await api.get('/auth/me')
     auth.setUser(meRes.data.user)
     showMsg('¡Login exitoso! Redirigiendo...', true)
@@ -182,11 +178,16 @@ async function login() {
 async function register() {
   if (!email.value || !password.value) return showMsg('Completa todos los campos')
 
-  // DESCOMENTAR para activar validación de edad
-  // const e = Number(edad.value)
-  // if (!edad.value || isNaN(e) || !Number.isInteger(e) || e < 18 || e > 25) {
-  //   return showMsg('Debes tener entre 18 y 25 años para registrarte')
-  // }
+  // Validación frontend: la edad debe estar entre 15 y 30
+  const e = Number(edad.value)
+  if (!edad.value || isNaN(e) || e < 15 || e > 30) {
+    return showMsg('Debes tener entre 15 y 30 años para registrarte')
+  }
+
+  // Solo manda solicitud al backend si es mayor de 20
+  if (e <= 20) {
+    return showMsg('Debes tener más de 20 años para completar el registro')
+  }
 
   loading.value = true
   try {
