@@ -110,6 +110,7 @@
 </template>
 
 <script setup>
+// reset de código 2
 import { ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { useAuthStore } from '../store/auth'
