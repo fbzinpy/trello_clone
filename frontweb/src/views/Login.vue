@@ -66,14 +66,18 @@
             placeholder="Edad"
             class="form-input"
           />
-          <input
-            v-if="mode === 'register'"
-            v-model="descripcion"
-            type="text"
-            placeholder="Descripción (15 - 30 caracteres)"
-            class="form-input"
-            maxlength="30"
-          />
+          <div v-if="mode === 'register'" style="display:flex; flex-direction:column; gap:4px">
+            <input
+              v-model="descripcion"
+              type="text"
+              placeholder="Descripción (15 - 30 caracteres)"
+              class="form-input"
+              maxlength="30"
+            />
+            <span v-if="descripcion.length > 0 && descripcion.trim().length < 15" class="advertencia">
+              ⚠️ La descripción es muy corta (mínimo 15 caracteres)
+            </span>
+          </div>
           <p v-if="mensaje" :class="['mensaje', mensajeOk ? 'ok' : 'error']">{{ mensaje }}</p>
           <button v-if="mode === 'login'" type="submit" class="btn-primary" :disabled="loading">
             {{ loading ? 'Cargando...' : 'Entrar' }}
@@ -190,17 +194,12 @@ async function register() {
     return showMsg('Debes tener más de 20 años para completar el registro')
   }
 
-  const desc = descripcion.value.trim()
-  if (desc.length < 15 || desc.length > 30) {
-    return showMsg('La descripción debe tener entre 15 y 30 caracteres')
-  }
-
   loading.value = true
   try {
     const res = await fetch('http://localhost:3000/api/auth/register', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ email: email.value, password: password.value, descripcion: desc })
+      body: JSON.stringify({ email: email.value, password: password.value, descripcion: descripcion.value.trim() })
     })
     const data = await res.json()
     if (!res.ok) return showMsg(data.error)
@@ -322,6 +321,7 @@ async function register() {
   font-family: 'Inter', sans-serif;
 }
 .form-input:focus { border-color: #0052CC; }
+.advertencia { font-size: 0.78rem; color: #974f0c; background: #fff7e6; border-radius: 5px; padding: 5px 9px; font-weight: 600; }
 .btn-primary {
   width: 100%; padding: 11px; background: #0052CC;
   color: white; border: none; border-radius: 6px;
