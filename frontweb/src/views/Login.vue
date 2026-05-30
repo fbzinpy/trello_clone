@@ -64,6 +64,16 @@
         <form class="form-body" @submit.prevent="submitAuth">
           <input v-model="email" type="email" placeholder="Correo electrónico" class="form-input" />
           <input v-model="password" type="password" placeholder="Contraseña" class="form-input" />
+          <!-- DESCOMENTAR para activar campo edad -->
+          <!-- <input
+            v-if="mode === 'register'"
+            v-model.number="edad"
+            type="number"
+            min="18"
+            max="25"
+            placeholder="Edad (18 - 25 años)"
+            class="form-input"
+          /> -->
           <p v-if="mensaje" :class="['mensaje', mensajeOk ? 'ok' : 'error']">{{ mensaje }}</p>
           <button v-if="mode === 'login'" type="submit" class="btn-primary" :disabled="loading">
             {{ loading ? 'Cargando...' : 'Entrar' }}
@@ -107,6 +117,7 @@ import api from '../axios'
 
 const email = ref('')
 const password = ref('')
+// const edad = ref('')   // DESCOMENTAR para activar campo edad
 const mode = ref('login')
 const loading = ref(false)
 const mensaje = ref('')
@@ -169,6 +180,13 @@ async function login() {
 
 async function register() {
   if (!email.value || !password.value) return showMsg('Completa todos los campos')
+
+  // DESCOMENTAR para activar validación de edad
+  // const e = Number(edad.value)
+  // if (!edad.value || isNaN(e) || !Number.isInteger(e) || e < 18 || e > 25) {
+  //   return showMsg('Debes tener entre 18 y 25 años para registrarte')
+  // }
+
   loading.value = true
   try {
     const res = await fetch('http://localhost:3000/api/auth/register', {
